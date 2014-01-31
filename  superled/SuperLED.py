@@ -19,18 +19,18 @@ from SuperLED_lib import *
 serial_port = '/dev/tty.usbmodem411'
 baud_rate = 500000      # We get about 1B per 10baud, so with 500'000 we get about 50'000B/sec, which is a theoretical frame rate of 65 frames per second
 NUM_LEDS = 256
-LEDoff = bytes([0x00, 0x00, 0x00])  # black led
+LEDoff = bytes([0x0f, 0x0f, 0x0f])  # black led
 
 transmit_flag = 0
 screen_buffer = bytearray()     # An array of bytes
 
 DEBUG = 1       # Increase verbosity
-OFFLINE = 0     # Don't write to serial port
+OFFLINE = 1     # Don't write to serial port
 
 ser = serial.Serial()   # Preparing the global serial object, ser
 
 def signal_handler(signal, frame):
-        print ('Interrupted manually, aborting')
+        print('Interrupted manually, aborting')
         ser.close()
         sys.exit(0)
 signal.signal(signal.SIGINT, signal_handler)
@@ -86,6 +86,8 @@ def blank():
 	if response != '':
 		if int(response) == (NUM_LEDS * 3):
 			print("- Full screen update acknowledged")
+		else:
+			print("Error, in stead of '768', Arduino said:", int(response))
 
 
 def draw_screen():
@@ -95,12 +97,17 @@ def draw_screen():
 		curses_draw(screen_buffer)
 	else:
 		if len(screen_buffer) != 768:
-			print("Error: screen_buffer size :", len(screen_buffer), "should be 768 (16*16*3)")
+			print('Error: screen_buffer size :', len(screen_buffer), 'should be 768 (16*16*3)')
+
+		for line in range(16):
+			if line % 2: screen_buffer[line * 16:line * 16 + 16] = reversed(screen_buffer[line * 16:line * 16 + 16])  # We need to reverse every second line (1,3,5 etc)
+
+
 		ser.write(screen_buffer)
-		sleep(0.1)
 		response = ser.read(3)
-		if response != '' and int(response) != (NUM_LEDS * 3):
-			print("Error, in stead of '768', Arduino said:", int(response))
+		if response != b'':
+			if int(response) != (NUM_LEDS * 3):
+				print("Error, in stead of '768', Arduino said:", int(response.decode('ascii')))
 
 
 def compress(buffer, factor):
@@ -108,8 +115,6 @@ def compress(buffer, factor):
 	length = len(buffer)
 
 	# TODO: SIMPLY ITERATE THROUGH THE LIST AND REMOVE ELEMENT        LINE *(0 - FACTOR) : LINE *(0 - FACTOR) errrrrR, you GET THE PONT
-
-
 
 
 	return buffer
@@ -123,7 +128,7 @@ def scroller(scroll_text, red, green, blue, speed):
 	font = SuperLED_data.font1
 	font_compress = 1   # How many empty columns on each side of the letter we want to remove for readability
 
-	# We "cheat" by adding a space at the beginning and end, which will allow us to smoothly scroll the last letter off the screen
+	# We "cheat" by adding a padding space at the beginning and end, which will allow us to smoothly scroll the last letter off the screen
 	# with a 16x16 font and the first onto the screen
 	scroll_text = " " + scroll_text + " "
 
@@ -137,7 +142,7 @@ def scroller(scroll_text, red, green, blue, speed):
 		font_index = (ord(letter) - 32) * 32    # ASCII - 32 is start of our fonts, and each font is 32 bytes (256 bits/monochrome pixels)
 		text_buffer = font[font_index:(font_index + 32)]
 
-		for line in range(0, 16):    # Line loop
+		for line in range(16):    # Line loop
 			msg_buffer[line] = msg_buffer[line] + text_buffer[line * 2: (line * 2) + 2]
 
 		letter_counter += 1
@@ -183,11 +188,13 @@ def scroller(scroll_text, red, green, blue, speed):
 			#print(scroll_offset)
 			screen_buffer = bytearray()     # Resetting the screen buffer
 			for line in range(16):
+
 				visible_start = int(line * (16 + cutoff)) + scroll_offset      # Start (in the display_buffer) of the visible line
 				visible_end = int(line * (16 + cutoff) + 16) + scroll_offset   # End (in the display_buffer) of the visible line
 
 				visible_line = display_buffer[visible_start: visible_end]
-				#print("Visible: ", visible_line)
+
+
 
 				pos_counter = 0
 				for led_rgb in visible_line:
@@ -199,11 +206,13 @@ def scroller(scroll_text, red, green, blue, speed):
 			draw_screen()  # Uses global screen_buffer to help threads later
 			sleep(1 - speed / 10)
 
+		#print("DEBUG: drawn")
+		#exit(0)
 
 
 
 initialize()
 blank()
-scroller("AbCdEf", 100, 0, 0, 9)     # Message in a orangeish color scrolling at speed 1
+scroller("heyjpq", 100, 0, 0, 9)     # Message in a orangeish color scrolling at speed 1
 
 ser.close()
