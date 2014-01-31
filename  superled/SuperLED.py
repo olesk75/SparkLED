@@ -13,7 +13,8 @@ import serial
 from time import sleep
 import sys
 import signal
-
+import threading
+from queue import Queue
 from SuperLED_lib import *
 
 serial_port = '/dev/tty.usbmodem411'
@@ -30,9 +31,9 @@ OFFLINE = 1     # Don't write to serial port
 ser = serial.Serial()   # Preparing the global serial object, ser
 
 def signal_handler(signal, frame):
-        print('Interrupted manually, aborting')
-        ser.close()
-        sys.exit(0)
+		print('Interrupted manually, aborting')
+		ser.close()
+		sys.exit(0)
 signal.signal(signal.SIGINT, signal_handler)
 
 
@@ -124,6 +125,7 @@ def scroller(scroll_text, red, green, blue, speed):
 	import SuperLED_data
 	global NUM_LEDS
 	global screen_buffer
+	global transmit_flag
 
 	font = SuperLED_data.font1
 	font_compress = 1   # How many empty columns on each side of the letter we want to remove for readability
@@ -184,6 +186,8 @@ def scroller(scroll_text, red, green, blue, speed):
 
 		cutoff = values_per_line - 16  # how much we need to skip from each line to make the data fit into screen buffer
 
+		transmit_flag = 0   # Disabling transmission of data while updating scree_buffer
+
 		for scroll_offset in range(len(scroll_text) * 16 - 16):
 			#print(scroll_offset)
 			screen_buffer = bytearray()     # Resetting the screen buffer
@@ -203,16 +207,33 @@ def scroller(scroll_text, red, green, blue, speed):
 					screen_buffer.append(int(str(led_rgb[2]).encode(encoding="ascii")))
 
 
-			draw_screen()  # Uses global screen_buffer to help threads later
+			#draw_screen()  # Uses global screen_buffer to help threads later
+			transmit_flag = 1   # Ready to transmit through thread
 			sleep(1 - speed / 10)
 
-		#print("DEBUG: drawn")
-		#exit(0)
+
+def init_thread(thread_function):
+	t = threading.Thread(target=thread_function)
+	t.daemon = True  # thread dies when main thread (only non-daemon thread) exits.
+	t.start()
+
+
+# The worker thread pulls an item from the queue and processes it
+def transmit_data():
+	global transmit_flag
+	while True:
+		if transmit_flag:
+			transmit_flag = 0   # Make sure we don't end up sending several times on top of eachother
+			draw_screen()
+
+
+
 
 
 
 initialize()
 blank()
+init_thread(transmit_data)
 scroller("heyjpq", 100, 0, 0, 9)     # Message in a orangeish color scrolling at speed 1
 
 ser.close()
