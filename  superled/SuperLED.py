@@ -25,9 +25,10 @@ NUM_LEDS = 256
 LEDoff = bytes([0x0f, 0x0f, 0x0f])  # black led
 transmit_flag = 0
 screen_buffer = bytearray()         # An array of bytes
+led_buffer = [256][3]      # A list of 256 triplets
 
 DEBUG = 1       # Increase verbosity
-OFFLINE = 0     # Don't write to serial port
+OFFLINE = 1     # Don't write to serial port
 
 ser = serial.Serial()   # Preparing the global serial object, ser
 
@@ -131,6 +132,11 @@ def scroller(scroll_text, red, green, blue, speed):
 	global NUM_LEDS
 	global screen_buffer
 	global transmit_flag
+	global led_buffer
+
+	print (type(led_buffer))
+	print (type(led_buffer[0]))
+
 
 	font = SuperLED_data.font1
 
@@ -260,6 +266,8 @@ def effects(buffer):
 		effects.active_effect = 'none'
 	else: effects.progress += 1
 
+	#time.sleep(1)
+
 	return buffer
 
 effects.active_effect = 'none'      # Static variable that contains the active effect - stays between funtion calls
@@ -269,7 +277,7 @@ initialize()
 blank()
 init_thread(transmit_data)
 
-effects.active_effect = 'down'
+effects.active_effect = 'none'
 
 scroller("heyjpq", 55, 25, 15, 9)     # Message in a orangeish color scrolling at speed 1
 
