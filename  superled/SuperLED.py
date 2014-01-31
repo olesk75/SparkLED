@@ -14,19 +14,20 @@ from time import sleep
 import sys
 import signal
 import threading
-from queue import Queue
 from SuperLED_lib import *
+import colorsys
+from math import ceil
 
+# Global variable definitions
 serial_port = '/dev/tty.usbmodem411'
-baud_rate = 500000      # We get about 1B per 10baud, so with 500'000 we get about 50'000B/sec, which is a theoretical frame rate of 65 frames per second
+baud_rate = 500000                  # We get about 1B per 10baud, so with 500'000 we get about 50'000B/sec, which is a theoretical frame rate of 65 frames per second
 NUM_LEDS = 256
 LEDoff = bytes([0x0f, 0x0f, 0x0f])  # black led
-
 transmit_flag = 0
-screen_buffer = bytearray()     # An array of bytes
+screen_buffer = bytearray()         # An array of bytes
 
 DEBUG = 1       # Increase verbosity
-OFFLINE = 1     # Don't write to serial port
+OFFLINE = 0     # Don't write to serial port
 
 ser = serial.Serial()   # Preparing the global serial object, ser
 
@@ -95,30 +96,34 @@ def draw_screen():
 	global screen_buffer
 
 	if OFFLINE:
-		curses_draw(screen_buffer)
+		curses_draw(effects(screen_buffer))
 	else:
 		if len(screen_buffer) != 768:
 			print('Error: screen_buffer size :', len(screen_buffer), 'should be 768 (16*16*3)')
-
-		for line in range(16):
-			if line % 2: screen_buffer[line * 16:line * 16 + 16] = reversed(screen_buffer[line * 16:line * 16 + 16])  # We need to reverse every second line (1,3,5 etc)
+			exit()
 
 
-		ser.write(screen_buffer)
+		# Starting the inversion of every second line due to HW layout of LED board
+		temp_buff_list = [3] * 16 * 16   # List if triplets
+
+		for n in range(NUM_LEDS):
+			temp_buff_list[n] = [screen_buffer[n * 3], screen_buffer[n * 3 + 1], screen_buffer[n * 3 + 2]]
+
+		for n in range(16):
+			if n % 2:
+				temp_buff_list[n * 16: n * 16 + 16] = reversed(temp_buff_list[n * 16: n * 16 + 16])
+
+		for n in range(NUM_LEDS):
+			[screen_buffer[n * 3], screen_buffer[n * 3 + 1], screen_buffer[n * 3 +2]] = temp_buff_list[n]
+		# Reversion done
+
+
+		ser.write(effects(screen_buffer))
+
 		response = ser.read(3)
 		if response != b'':
 			if int(response) != (NUM_LEDS * 3):
 				print("Error, in stead of '768', Arduino said:", int(response.decode('ascii')))
-
-
-def compress(buffer, factor):
-	# buffer is a list of lists, each inner list consisting of 3 ints, each of these 1 or 0
-	length = len(buffer)
-
-	# TODO: SIMPLY ITERATE THROUGH THE LIST AND REMOVE ELEMENT        LINE *(0 - FACTOR) : LINE *(0 - FACTOR) errrrrR, you GET THE PONT
-
-
-	return buffer
 
 
 def scroller(scroll_text, red, green, blue, speed):
@@ -128,7 +133,6 @@ def scroller(scroll_text, red, green, blue, speed):
 	global transmit_flag
 
 	font = SuperLED_data.font1
-	font_compress = 1   # How many empty columns on each side of the letter we want to remove for readability
 
 	# We "cheat" by adding a padding space at the beginning and end, which will allow us to smoothly scroll the last letter off the screen
 	# with a 16x16 font and the first onto the screen
@@ -218,7 +222,6 @@ def init_thread(thread_function):
 	t.start()
 
 
-# The worker thread pulls an item from the queue and processes it
 def transmit_data():
 	global transmit_flag
 	while True:
@@ -227,13 +230,47 @@ def transmit_data():
 			draw_screen()
 
 
+# noinspection PyUnresolvedReferences
+def effects(buffer):
+	if effects.active_effect == 'down' and effects.progress < 16:
+		for n in range(effects.progress):
+			buffer = bytes([0] * 16 * 3) + buffer[:-16 * 3]
+
+	if effects.active_effect == 'up' and effects.progress < 16:
+		for n in range(effects.progress):
+			buffer = buffer[16 * 3:] + bytes([0] * 16 * 3)
+
+
+	if effects.active_effect == 'fade' and effects.progress < 16:
+		n = 0
+		while n < len(buffer):
+			hls = colorsys.rgb_to_hls(buffer[n] / 256, buffer[n+1] / 256, buffer[n+2] / 256)    # Converting first from 0-256 to 0-1 values (floats)
+			if hls[1] > 0:  # Only dimming the "lightness" 10% each turn
+				[h, l, s] = [hls[0], hls[1] * 0.01, hls[2]]
+				[red, green, blue] = colorsys.hls_to_rgb(h, l, s)
+				[buffer[n], buffer[n+1], buffer[n+2]] = [ceil(red * 256), ceil(green * 256), ceil(blue * 256)]
+
+			n += 3
 
 
 
+
+	if effects.progress == 16:
+		effects.progress = 0    # We're done, making ready for another run/effect
+		effects.active_effect = 'none'
+	else: effects.progress += 1
+
+	return buffer
+
+effects.active_effect = 'none'      # Static variable that contains the active effect - stays between funtion calls
+effects.progress = 0                # Static variable that measures the progress of the active effect - stays between funtion calls
 
 initialize()
 blank()
 init_thread(transmit_data)
-scroller("heyjpq", 100, 0, 0, 9)     # Message in a orangeish color scrolling at speed 1
+
+effects.active_effect = 'down'
+
+scroller("heyjpq", 55, 25, 15, 9)     # Message in a orangeish color scrolling at speed 1
 
 ser.close()
