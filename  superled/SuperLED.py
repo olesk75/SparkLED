@@ -34,6 +34,8 @@ OFFLINE = 0     # Don't write to serial port
 
 ser = serial.Serial()   # Preparing the global serial object, ser
 
+
+# noinspection PyUnusedLocal,PyUnusedLocal,PyShadowingNames
 def signal_handler(signal, frame):
 		print('Interrupted manually, aborting')
 		ser.close()
@@ -71,7 +73,7 @@ def initialize():
 		print("- Go code 'G' failed")
 		sys.exit("Unable to send go code to Arduino")
 
-	response = ser.read(1);
+	response = ser.read(1)
 	if response != '':
 		if response == b'A':
 			print("- Go code acknowledged by Arduino - ready to rumble!")
@@ -95,6 +97,7 @@ def blank():
 			print("Error, in stead of '768', Arduino said:", int(response))
 
 
+# noinspection PyShadowingNames,PyShadowingNames
 def draw_screen():
 	screen_buffer = [0,0,0]   # BOGUS! REPLACE THIS WITH THE led_buffer list ([256][3])
 
@@ -181,8 +184,6 @@ def scroller(scroll_text, red, green, blue, speed):
 		transmit_flag = 0   # Disabling transmission of data while updating led_buffer
 
 		for scroll_offset in range(len(scroll_text) * 16 - 16):
-
-			screen_buffer = bytearray()     # Resetting the screen buffer # DELETE
 			for line in range(16):
 
 				visible_start = int(line * (16 + cutoff)) + scroll_offset      # Start (in the display_buffer) of the visible line
@@ -214,6 +215,7 @@ def transmit_data():
 	while True:
 		if transmit_flag:
 			transmit_flag = 0   # Make sure we don't end up sending several times on top of eachother
+								# Means we must actively set transmit_flag = 1 in outside code
 			draw_screen()
 
 
@@ -221,34 +223,39 @@ def transmit_data():
 def effects():
 	global led_buffer
 
-	if effects.active_effect == 'down' and effects.progress < 16:
-		for n in range(effects.progress):
-			#led_buffer[(15-n) * 16 : ]
+	# if effects.active_effect == 'down' and effects.progress < 16:
+	# 	for n in range(effects.progress):
+	# 		#led_buffer[(15-n) * 16 : ]
+	# 		pass
+	#
+	#
+	# if effects.active_effect == 'up' and effects.progress < 16:
+	# 	for n in range(effects.progress):
+	# 		buffer = buffer[16 * 3:] + bytes([0] * 16 * 3)
 
 
-	if effects.active_effect == 'up' and effects.progress < 16:
-		for n in range(effects.progress):
-			buffer = buffer[16 * 3:] + bytes([0] * 16 * 3)
+	hls = [0.0, 0.0, 0.0]    # hue/lightness/saturation list for each LED
+	if effects.active_effect == 'fade' and effects.progress < 32:
+		for index, rgb in enumerate(led_buffer):    # Gives us the list index, which we will need to reinsert values into led_buffer
+			hls = list(colorsys.rgb_to_hls(rgb[0] / 256, rgb[1] / 256, rgb[2] / 256))  # Color coordinates have values 0-1 and are floats
+			if hls[1] > 0:
+				fade_factor = 1 - (1 / 32) * effects.progress
+				print(fade_factor)
+				hls[1] *= fade_factor
+				if hls[1] < 0: hls[1] = 0
+			rgb = list(colorsys.hls_to_rgb(hls[0], hls[1], hls[2]))   # Color coordinates have values 0-1 and are floats
+			led_buffer[index] = [ceil(rgb[0] * 256), ceil(rgb[1] * 256), ceil(rgb[2] * 256)]
 
-
-	if effects.active_effect == 'fade' and effects.progress < 16:
-		n = 0
-		while n < len(buffer):
-			hls = colorsys.rgb_to_hls(buffer[n] / 256, buffer[n+1] / 256, buffer[n+2] / 256)    # Converting first from 0-256 to 0-1 values (floats)
-			if hls[1] > 0:  # Only dimming the "lightness" 10% each turn
-				[h, l, s] = [hls[0], hls[1] * 0.01, hls[2]]
-				[red, green, blue] = colorsys.hls_to_rgb(h, l, s)
-				[buffer[n], buffer[n+1], buffer[n+2]] = [ceil(red * 256), ceil(green * 256), ceil(blue * 256)]
-			n += 3
-
-	if effects.progress == 16:
+	if effects.progress == 32:
 		effects.progress = 0    # We're done, making ready for another run/effect
 		effects.active_effect = 'none'
 	else: effects.progress += 1
 
+	#
+	# Finally, we convert the whole led_buffer list into a string of bytes that we can write to curses/Arduino
+	#
 	buffer = bytearray()
 
-	# Finally, we convert the whole led_buffer list into a strong of bytes that we can write to curses/Arduino
 	for rgb in led_buffer:          # For each led... 256 in total
 		buffer.append(rgb[0])
 		buffer.append(rgb[1])
@@ -263,8 +270,8 @@ initialize()
 blank()
 init_thread(transmit_data)
 
-effects.active_effect = 'none'
+effects.active_effect = 'fade'
 
-scroller("heyjpq", 55, 25, 15, 9)     # Message in a orangeish color scrolling at speed 1
+scroller("Ole Jakob", 55, 25, 15, 9)     # Message in a orangeish color scrolling at speed 1
 
 ser.close()

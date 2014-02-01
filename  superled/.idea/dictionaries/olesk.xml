@@ -7,6 +7,8 @@
       <w>leds</w>
       <w>rgbbuffer</w>
       <w>scroller</w>
+      <w>superled</w>
+      <w>superled.py</w>
       <w>usbmodem</w>
     </words>
   </dictionary>
