@@ -29,14 +29,9 @@
       <file leaf-file-name="SuperLED.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/SuperLED.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="186" column="0" selection-start="5672" selection-end="5672" vertical-scroll-proportion="0.7907743" vertical-offset="1140" max-vertical-offset="3060">
+            <state line="225" column="13" selection-start="7061" selection-end="7061" vertical-scroll-proportion="0.31" vertical-offset="3220" max-vertical-offset="4140">
               <folding>
-                <element signature="e#502#515#0" expanded="true" />
-                <element signature="e#1392#2453#0" expanded="false" />
-                <element signature="e#2470#2784#0" expanded="false" />
-                <element signature="e#2807#3754#0" expanded="false" />
-                <element signature="e#7213#7349#0" expanded="false" />
-                <element signature="e#7374#7540#0" expanded="false" />
+                <element signature="e#499#512#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -362,7 +357,11 @@
       <created>1391195509103</created>
       <updated>1391195509103</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Commit before switching from bytearray to list.&#10;&#10;led_buffer[256 int][3 bytes]">
+      <created>1391208596110</created>
+      <updated>1391208596110</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -389,6 +388,7 @@
     <frame x="0" y="22" width="1440" height="874" extended-state="6" />
     <editor active="true" />
     <layout>
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32857144" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32891247" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32917705" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3280507" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
@@ -397,13 +397,12 @@
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.27063492" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32956952" sideWeight="0.6309227" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.29686305" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16005291" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.26657826" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32857144" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3553616" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
@@ -419,7 +418,8 @@
     <MESSAGE value="Workspace change" />
     <MESSAGE value="Implemented rudimentary threading" />
     <MESSAGE value="Fixed alternate line inversion bug&#10;&#10;TODO: effects not working on LED (bot fine in curses)" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed alternate line inversion bug&#10;&#10;TODO: effects not working on LED (bot fine in curses)" />
+    <MESSAGE value="Commit before switching from bytearray to list.&#10;&#10;led_buffer[256 int][3 bytes]" />
+    <option name="LAST_COMMIT_MESSAGE" value="Commit before switching from bytearray to list.&#10;&#10;led_buffer[256 int][3 bytes]" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -434,12 +434,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="157" column="0" selection-start="4675" selection-end="4675" vertical-scroll-proportion="0.0" vertical-offset="2669" max-vertical-offset="2771">
           <folding>
-            <element signature="e#502#515#0" expanded="true" />
-            <element signature="e#1392#2453#0" expanded="false" />
-            <element signature="e#2470#2784#0" expanded="false" />
-            <element signature="e#2807#3754#0" expanded="false" />
-            <element signature="e#7213#7349#0" expanded="false" />
-            <element signature="e#7374#7540#0" expanded="false" />
+            <element signature="e#499#512#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -448,12 +443,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="131" column="28" selection-start="3920" selection-end="3920" vertical-scroll-proportion="0.0" vertical-offset="30" max-vertical-offset="2445">
           <folding>
-            <element signature="e#502#515#0" expanded="true" />
-            <element signature="e#1392#2453#0" expanded="false" />
-            <element signature="e#2470#2784#0" expanded="false" />
-            <element signature="e#2807#3754#0" expanded="false" />
-            <element signature="e#7213#7349#0" expanded="false" />
-            <element signature="e#7374#7540#0" expanded="false" />
+            <element signature="e#499#512#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -467,12 +457,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="92" column="0" selection-start="2657" selection-end="2657" vertical-scroll-proportion="0.0" vertical-offset="1473" max-vertical-offset="2431">
           <folding>
-            <element signature="e#502#515#0" expanded="true" />
-            <element signature="e#1392#2453#0" expanded="false" />
-            <element signature="e#2470#2784#0" expanded="false" />
-            <element signature="e#2807#3754#0" expanded="false" />
-            <element signature="e#7213#7349#0" expanded="false" />
-            <element signature="e#7374#7540#0" expanded="false" />
+            <element signature="e#499#512#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -486,12 +471,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="80" column="120" selection-start="2344" selection-end="2344" vertical-scroll-proportion="0.0" vertical-offset="799" max-vertical-offset="1904">
           <folding>
-            <element signature="e#502#515#0" expanded="true" />
-            <element signature="e#1392#2453#0" expanded="false" />
-            <element signature="e#2470#2784#0" expanded="false" />
-            <element signature="e#2807#3754#0" expanded="false" />
-            <element signature="e#7213#7349#0" expanded="false" />
-            <element signature="e#7374#7540#0" expanded="false" />
+            <element signature="e#499#512#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -505,12 +485,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="80" column="120" selection-start="2344" selection-end="2344" vertical-scroll-proportion="0.0" vertical-offset="1326" max-vertical-offset="1904">
           <folding>
-            <element signature="e#502#515#0" expanded="true" />
-            <element signature="e#1392#2453#0" expanded="false" />
-            <element signature="e#2470#2784#0" expanded="false" />
-            <element signature="e#2807#3754#0" expanded="false" />
-            <element signature="e#7213#7349#0" expanded="false" />
-            <element signature="e#7374#7540#0" expanded="false" />
+            <element signature="e#499#512#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -524,12 +499,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="117" column="83" selection-start="3260" selection-end="3260" vertical-scroll-proportion="0.0" vertical-offset="1904" max-vertical-offset="1904">
           <folding>
-            <element signature="e#502#515#0" expanded="true" />
-            <element signature="e#1392#2453#0" expanded="false" />
-            <element signature="e#2470#2784#0" expanded="false" />
-            <element signature="e#2807#3754#0" expanded="false" />
-            <element signature="e#7213#7349#0" expanded="false" />
-            <element signature="e#7374#7540#0" expanded="false" />
+            <element signature="e#499#512#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -565,14 +535,9 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/SuperLED.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="186" column="0" selection-start="5672" selection-end="5672" vertical-scroll-proportion="0.7907743" vertical-offset="1140" max-vertical-offset="3060">
+        <state line="225" column="13" selection-start="7061" selection-end="7061" vertical-scroll-proportion="0.31" vertical-offset="3220" max-vertical-offset="4140">
           <folding>
-            <element signature="e#502#515#0" expanded="true" />
-            <element signature="e#1392#2453#0" expanded="false" />
-            <element signature="e#2470#2784#0" expanded="false" />
-            <element signature="e#2807#3754#0" expanded="false" />
-            <element signature="e#7213#7349#0" expanded="false" />
-            <element signature="e#7374#7540#0" expanded="false" />
+            <element signature="e#499#512#0" expanded="true" />
           </folding>
         </state>
       </provider>

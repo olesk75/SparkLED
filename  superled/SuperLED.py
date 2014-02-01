@@ -5,7 +5,7 @@
 
 # Termonology:
 # rgb_buffer	: Arduino compatible buffer with 3 bytes per LED, 768 bytes in total ( 16 * 16 * 3)
-# screen_buffer : the final 768 byte buffer we send to the arduino
+# led_buffer : the final 768 elemnt list we send to the arduino
 # transmit_flag : flag that indicates if the transmit thread can send the screen_buffer to the Arduino or if it should wait
 
 
@@ -22,13 +22,15 @@ from math import ceil
 serial_port = '/dev/tty.usbmodem411'
 baud_rate = 500000                  # We get about 1B per 10baud, so with 500'000 we get about 50'000B/sec, which is a theoretical frame rate of 65 frames per second
 NUM_LEDS = 256
-LEDoff = bytes([0x0f, 0x0f, 0x0f])  # black led
+LEDoff = bytes([0x0c, 0x0c, 0x0c])  # black led
 transmit_flag = 0
-screen_buffer = bytearray()         # An array of bytes
-led_buffer = [256][3]      # A list of 256 triplets
+
+led_buffer = [None] * 256           # The list of bytes to be sent to curses or Arduino
+for i in range(256):
+	led_buffer[i] = [None] * 3      # 256 x 3 list
 
 DEBUG = 1       # Increase verbosity
-OFFLINE = 1     # Don't write to serial port
+OFFLINE = 0     # Don't write to serial port
 
 ser = serial.Serial()   # Preparing the global serial object, ser
 
@@ -94,32 +96,22 @@ def blank():
 
 
 def draw_screen():
-	global screen_buffer
+	screen_buffer = [0,0,0]   # BOGUS! REPLACE THIS WITH THE led_buffer list ([256][3])
 
 	if OFFLINE:
-		curses_draw(effects(screen_buffer))
+		curses_draw(effects())
 	else:
-		if len(screen_buffer) != 768:
-			print('Error: screen_buffer size :', len(screen_buffer), 'should be 768 (16*16*3)')
-			exit()
 
 
 		# Starting the inversion of every second line due to HW layout of LED board
-		temp_buff_list = [3] * 16 * 16   # List if triplets
+		temp_buffer = [None] * 16           # One line of leds
+		for i in range(16):
+			temp_buffer[i] = [None] * 3      # 16 x 3 list
 
-		for n in range(NUM_LEDS):
-			temp_buff_list[n] = [screen_buffer[n * 3], screen_buffer[n * 3 + 1], screen_buffer[n * 3 + 2]]
+		for n in range(1, 16, 2):   # Every second line, starting at the second from the top
+			led_buffer[n*16:n*16+16] = reversed(led_buffer[n*16:n*16+16])
 
-		for n in range(16):
-			if n % 2:
-				temp_buff_list[n * 16: n * 16 + 16] = reversed(temp_buff_list[n * 16: n * 16 + 16])
-
-		for n in range(NUM_LEDS):
-			[screen_buffer[n * 3], screen_buffer[n * 3 + 1], screen_buffer[n * 3 +2]] = temp_buff_list[n]
-		# Reversion done
-
-
-		ser.write(effects(screen_buffer))
+		ser.write(effects())
 
 		response = ser.read(3)
 		if response != b'':
@@ -130,13 +122,8 @@ def draw_screen():
 def scroller(scroll_text, red, green, blue, speed):
 	import SuperLED_data
 	global NUM_LEDS
-	global screen_buffer
 	global transmit_flag
 	global led_buffer
-
-	print (type(led_buffer))
-	print (type(led_buffer[0]))
-
 
 	font = SuperLED_data.font1
 
@@ -171,36 +158,31 @@ def scroller(scroll_text, red, green, blue, speed):
 				first = pixel >> 7 - bin_pos
 				first &= 1
 				display_buffer.append([first] * 3)    # 1 or 0 is added 3 times to make it easier to add colors later
-				#if DEBUG: print(first, end="")
-
-		#print()
-
-	#time.sleep(1) # DEBUG: Gives us time to see the text
 
 
 	# display_buffer is a list of lists, each inner list consisting of 3 ints, each of these 1 or 0
 	# We can now multiply all the inner lists with the right color values
+
 	for led in display_buffer:
 		led[0] *= red
 		led[1] *= green
 		led[2] *= blue
 
-	values_per_line = len(display_buffer) / 16  # The number og LED value COLUMNS  we have to display, which must finally be compied to the screen_buffer
 
-	#print('We have ', values_per_line, 'columns of text data to display')
-	#print(display_buffer)
 
-	#display_buffer = compress(display_buffer, font_compress)
+
+	values_per_line = len(display_buffer) / 16  # The number og LED value COLUMNS  we have to display, which must finally be compied to the led_buffer
+
 
 	while 1:    # TODO: Need to be interrupted somehow with a flag set by a threaded process
 
 		cutoff = values_per_line - 16  # how much we need to skip from each line to make the data fit into screen buffer
 
-		transmit_flag = 0   # Disabling transmission of data while updating scree_buffer
+		transmit_flag = 0   # Disabling transmission of data while updating led_buffer
 
 		for scroll_offset in range(len(scroll_text) * 16 - 16):
-			#print(scroll_offset)
-			screen_buffer = bytearray()     # Resetting the screen buffer
+
+			screen_buffer = bytearray()     # Resetting the screen buffer # DELETE
 			for line in range(16):
 
 				visible_start = int(line * (16 + cutoff)) + scroll_offset      # Start (in the display_buffer) of the visible line
@@ -208,18 +190,17 @@ def scroller(scroll_text, red, green, blue, speed):
 
 				visible_line = display_buffer[visible_start: visible_end]
 
+				#print("Visible line", visible_line)
 
 
-				pos_counter = 0
-				for led_rgb in visible_line:
-					screen_buffer.append(int(str(led_rgb[0]).encode(encoding="ascii")))
-					screen_buffer.append(int(str(led_rgb[1]).encode(encoding="ascii")))
-					screen_buffer.append(int(str(led_rgb[2]).encode(encoding="ascii")))
+				for rgb in range(16):
+					led_buffer[line * 16 + rgb] = visible_line[rgb]
 
 
-			#draw_screen()  # Uses global screen_buffer to help threads later
+			#draw_screen()  # Not called manually anymore - done in separate thread
 			transmit_flag = 1   # Ready to transmit through thread
-			sleep(1 - speed / 10)
+			#print(led_buffer)
+			sleep(1 - speed / 10)   # Without this Arduino goes berserk
 
 
 def init_thread(thread_function):
@@ -237,10 +218,13 @@ def transmit_data():
 
 
 # noinspection PyUnresolvedReferences
-def effects(buffer):
+def effects():
+	global led_buffer
+
 	if effects.active_effect == 'down' and effects.progress < 16:
 		for n in range(effects.progress):
-			buffer = bytes([0] * 16 * 3) + buffer[:-16 * 3]
+			#led_buffer[(15-n) * 16 : ]
+
 
 	if effects.active_effect == 'up' and effects.progress < 16:
 		for n in range(effects.progress):
@@ -255,18 +239,20 @@ def effects(buffer):
 				[h, l, s] = [hls[0], hls[1] * 0.01, hls[2]]
 				[red, green, blue] = colorsys.hls_to_rgb(h, l, s)
 				[buffer[n], buffer[n+1], buffer[n+2]] = [ceil(red * 256), ceil(green * 256), ceil(blue * 256)]
-
 			n += 3
-
-
-
 
 	if effects.progress == 16:
 		effects.progress = 0    # We're done, making ready for another run/effect
 		effects.active_effect = 'none'
 	else: effects.progress += 1
 
-	#time.sleep(1)
+	buffer = bytearray()
+
+	# Finally, we convert the whole led_buffer list into a strong of bytes that we can write to curses/Arduino
+	for rgb in led_buffer:          # For each led... 256 in total
+		buffer.append(rgb[0])
+		buffer.append(rgb[1])
+		buffer.append(rgb[2])
 
 	return buffer
 
