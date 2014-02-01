@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" readonly="true" id="d6f4eb0d-599e-4dec-8d76-5af013d5420a" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SuperLED.py" afterPath="$PROJECT_DIR$/SuperLED.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SuperLED_data.py" afterPath="$PROJECT_DIR$/SuperLED_data.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="SuperLED.iws" />
@@ -26,10 +27,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="SuperLED.py" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="SuperLED.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/SuperLED.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="225" column="13" selection-start="7061" selection-end="7061" vertical-scroll-proportion="0.31" vertical-offset="3220" max-vertical-offset="4140">
+            <state line="225" column="13" selection-start="7061" selection-end="7061" vertical-scroll-proportion="-6.2" vertical-offset="3220" max-vertical-offset="4140">
               <folding>
                 <element signature="e#499#512#0" expanded="true" />
               </folding>
@@ -46,10 +47,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="SuperLED_data.py" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="SuperLED_data.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/SuperLED_data.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="1" column="22" selection-start="23" selection-end="23" vertical-scroll-proportion="0.0" vertical-offset="15" max-vertical-offset="1665">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-2.429752" vertical-offset="1764" max-vertical-offset="2490">
               <folding />
             </state>
           </provider>
@@ -66,10 +67,10 @@
     <option name="changedFiles">
       <list>
         <option value="$PROJECT_DIR$/test" />
-        <option value="$PROJECT_DIR$/SuperLED_data.py" />
         <option value="$PROJECT_DIR$/kladd" />
         <option value="$PROJECT_DIR$/SuperLED_lib.py" />
         <option value="$PROJECT_DIR$/SuperLED.py" />
+        <option value="$PROJECT_DIR$/SuperLED_data.py" />
       </list>
     </option>
   </component>
@@ -94,7 +95,7 @@
         </expanded-state>
         <selected-state>
           <State>
-            <id>PyStatementEffectInspection</id>
+            <id>PyPep8Inspection</id>
           </State>
         </selected-state>
       </profile-state>
@@ -361,7 +362,11 @@
       <created>1391208596110</created>
       <updated>1391208596110</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Two dimensional list in place. Bytearrays dropped, except for the final write to curses/LED display. All effects now applies to led_display list, but must be rewritten.">
+      <created>1391213879104</created>
+      <updated>1391213879104</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -397,7 +402,7 @@
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.27063492" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32956952" sideWeight="0.6309227" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.29686305" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.26657826" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.26657826" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -419,7 +424,8 @@
     <MESSAGE value="Implemented rudimentary threading" />
     <MESSAGE value="Fixed alternate line inversion bug&#10;&#10;TODO: effects not working on LED (bot fine in curses)" />
     <MESSAGE value="Commit before switching from bytearray to list.&#10;&#10;led_buffer[256 int][3 bytes]" />
-    <option name="LAST_COMMIT_MESSAGE" value="Commit before switching from bytearray to list.&#10;&#10;led_buffer[256 int][3 bytes]" />
+    <MESSAGE value="Two dimensional list in place. Bytearrays dropped, except for the final write to curses/LED display. All effects now applies to led_display list, but must be rewritten." />
+    <option name="LAST_COMMIT_MESSAGE" value="Two dimensional list in place. Bytearrays dropped, except for the final write to curses/LED display. All effects now applies to led_display list, but must be rewritten." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -519,13 +525,6 @@
         <state line="1531" column="0" selection-start="60412" selection-end="60412" vertical-scroll-proportion="1.225084" vertical-offset="28206" max-vertical-offset="29440" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/SuperLED_data.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1" column="22" selection-start="23" selection-end="23" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2220">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/SuperLED_lib.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="34" column="12" selection-start="676" selection-end="676" vertical-scroll-proportion="0.0" vertical-offset="12" max-vertical-offset="1460">
@@ -535,10 +534,17 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/SuperLED.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="225" column="13" selection-start="7061" selection-end="7061" vertical-scroll-proportion="0.31" vertical-offset="3220" max-vertical-offset="4140">
+        <state line="225" column="13" selection-start="7061" selection-end="7061" vertical-scroll-proportion="-6.2" vertical-offset="3220" max-vertical-offset="4140">
           <folding>
             <element signature="e#499#512#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/SuperLED_data.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-2.429752" vertical-offset="1764" max-vertical-offset="2490">
+          <folding />
         </state>
       </provider>
     </entry>
