@@ -60,10 +60,7 @@ def curses_draw(buffer):
 			screen.addstr(line, row, " ", curses.color_pair(bytecolor))
 
 	screen.refresh()
-	#if screen.getkey(): exit("\nKey pressed, aborting...")
-
 	#time.sleep(0.1)
 
-	# Cleaning up and exiting
-	curses.endwin()
+
 	return

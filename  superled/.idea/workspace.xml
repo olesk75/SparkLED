@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" readonly="true" id="d6f4eb0d-599e-4dec-8d76-5af013d5420a" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SuperLED.py" afterPath="$PROJECT_DIR$/SuperLED.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SuperLED_lib.py" afterPath="$PROJECT_DIR$/SuperLED_lib.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/dictionaries/olesk.xml" afterPath="$PROJECT_DIR$/.idea/dictionaries/olesk.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
@@ -27,26 +28,25 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="SuperLED.py" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="SuperLED.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/SuperLED.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="252" column="0" selection-start="8270" selection-end="8270" vertical-scroll-proportion="3.180934" vertical-offset="0" max-vertical-offset="2100">
+            <state line="41" column="20" selection-start="1449" selection-end="1449" vertical-scroll-proportion="0.0" vertical-offset="359" max-vertical-offset="2145">
               <folding>
                 <element signature="e#499#512#0" expanded="true" />
-                <element signature="e#1365#1432#0" expanded="false" />
-                <element signature="e#1500#2560#0" expanded="false" />
-                <element signature="e#2963#3649#0" expanded="false" />
-                <element signature="e#3705#6554#0" expanded="false" />
-                <element signature="e#6592#6728#0" expanded="false" />
+                <element signature="e#1546#2606#0" expanded="false" />
+                <element signature="e#3009#3695#0" expanded="false" />
+                <element signature="e#3751#6600#0" expanded="false" />
+                <element signature="e#6638#6774#0" expanded="false" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="SuperLED_lib.py" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="SuperLED_lib.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/SuperLED_lib.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="34" column="12" selection-start="676" selection-end="676" vertical-scroll-proportion="0.0" vertical-offset="367" max-vertical-offset="1095">
+            <state line="61" column="20" selection-start="2036" selection-end="2036" vertical-scroll-proportion="0.71428573" vertical-offset="525" max-vertical-offset="1050">
               <folding />
             </state>
           </provider>
@@ -73,9 +73,9 @@
       <list>
         <option value="$PROJECT_DIR$/test" />
         <option value="$PROJECT_DIR$/kladd" />
-        <option value="$PROJECT_DIR$/SuperLED_lib.py" />
         <option value="$PROJECT_DIR$/SuperLED_data.py" />
         <option value="$PROJECT_DIR$/SuperLED.py" />
+        <option value="$PROJECT_DIR$/SuperLED_lib.py" />
       </list>
     </option>
   </component>
@@ -389,7 +389,11 @@
       <created>1391247593104</created>
       <updated>1391247593104</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Implemented fader via RGB-&gt;VLS and VLS-&gt;RGB trickery to get access to &quot;lightness&quot;.">
+      <created>1391295742113</created>
+      <updated>1391295742113</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -418,20 +422,20 @@
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32891247" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32917705" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3280507" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24982357" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18278052" sideWeight="0.734127" order="1" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.26984128" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.35449734" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32956952" sideWeight="0.6309227" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.29686305" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.26587301" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32956952" sideWeight="0.6309227" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32857144" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3280507" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24982357" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18278052" sideWeight="0.73342174" order="1" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.26657826" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.35449734" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32857144" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
     </layout>
@@ -449,17 +453,11 @@
     <MESSAGE value="Commit before switching from bytearray to list.&#10;&#10;led_buffer[256 int][3 bytes]" />
     <MESSAGE value="Two dimensional list in place. Bytearrays dropped, except for the final write to curses/LED display. All effects now applies to led_display list, but must be rewritten." />
     <MESSAGE value="Added two new fonts" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added two new fonts" />
+    <MESSAGE value="Implemented fader via RGB-&gt;VLS and VLS-&gt;RGB trickery to get access to &quot;lightness&quot;." />
+    <option name="LAST_COMMIT_MESSAGE" value="Implemented fader via RGB-&gt;VLS and VLS-&gt;RGB trickery to get access to &quot;lightness&quot;." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="python-line">
-          <url>file://$PROJECT_DIR$/SuperLED.py</url>
-          <line>243</line>
-          <option name="timeStamp" value="33" />
-        </line-breakpoint>
-      </breakpoints>
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
@@ -472,11 +470,10 @@
         <state line="157" column="0" selection-start="4675" selection-end="4675" vertical-scroll-proportion="0.0" vertical-offset="2669" max-vertical-offset="2771">
           <folding>
             <element signature="e#499#512#0" expanded="true" />
-            <element signature="e#1365#1432#0" expanded="false" />
-            <element signature="e#1500#2560#0" expanded="false" />
-            <element signature="e#2963#3649#0" expanded="false" />
-            <element signature="e#3705#6554#0" expanded="false" />
-            <element signature="e#6592#6728#0" expanded="false" />
+            <element signature="e#1546#2606#0" expanded="false" />
+            <element signature="e#3009#3695#0" expanded="false" />
+            <element signature="e#3751#6600#0" expanded="false" />
+            <element signature="e#6638#6774#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -486,11 +483,10 @@
         <state line="131" column="28" selection-start="3920" selection-end="3920" vertical-scroll-proportion="0.0" vertical-offset="30" max-vertical-offset="2445">
           <folding>
             <element signature="e#499#512#0" expanded="true" />
-            <element signature="e#1365#1432#0" expanded="false" />
-            <element signature="e#1500#2560#0" expanded="false" />
-            <element signature="e#2963#3649#0" expanded="false" />
-            <element signature="e#3705#6554#0" expanded="false" />
-            <element signature="e#6592#6728#0" expanded="false" />
+            <element signature="e#1546#2606#0" expanded="false" />
+            <element signature="e#3009#3695#0" expanded="false" />
+            <element signature="e#3751#6600#0" expanded="false" />
+            <element signature="e#6638#6774#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -505,11 +501,10 @@
         <state line="92" column="0" selection-start="2657" selection-end="2657" vertical-scroll-proportion="0.0" vertical-offset="1473" max-vertical-offset="2431">
           <folding>
             <element signature="e#499#512#0" expanded="true" />
-            <element signature="e#1365#1432#0" expanded="false" />
-            <element signature="e#1500#2560#0" expanded="false" />
-            <element signature="e#2963#3649#0" expanded="false" />
-            <element signature="e#3705#6554#0" expanded="false" />
-            <element signature="e#6592#6728#0" expanded="false" />
+            <element signature="e#1546#2606#0" expanded="false" />
+            <element signature="e#3009#3695#0" expanded="false" />
+            <element signature="e#3751#6600#0" expanded="false" />
+            <element signature="e#6638#6774#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -524,11 +519,10 @@
         <state line="80" column="120" selection-start="2344" selection-end="2344" vertical-scroll-proportion="0.0" vertical-offset="799" max-vertical-offset="1904">
           <folding>
             <element signature="e#499#512#0" expanded="true" />
-            <element signature="e#1365#1432#0" expanded="false" />
-            <element signature="e#1500#2560#0" expanded="false" />
-            <element signature="e#2963#3649#0" expanded="false" />
-            <element signature="e#3705#6554#0" expanded="false" />
-            <element signature="e#6592#6728#0" expanded="false" />
+            <element signature="e#1546#2606#0" expanded="false" />
+            <element signature="e#3009#3695#0" expanded="false" />
+            <element signature="e#3751#6600#0" expanded="false" />
+            <element signature="e#6638#6774#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -543,11 +537,10 @@
         <state line="80" column="120" selection-start="2344" selection-end="2344" vertical-scroll-proportion="0.0" vertical-offset="1326" max-vertical-offset="1904">
           <folding>
             <element signature="e#499#512#0" expanded="true" />
-            <element signature="e#1365#1432#0" expanded="false" />
-            <element signature="e#1500#2560#0" expanded="false" />
-            <element signature="e#2963#3649#0" expanded="false" />
-            <element signature="e#3705#6554#0" expanded="false" />
-            <element signature="e#6592#6728#0" expanded="false" />
+            <element signature="e#1546#2606#0" expanded="false" />
+            <element signature="e#3009#3695#0" expanded="false" />
+            <element signature="e#3751#6600#0" expanded="false" />
+            <element signature="e#6638#6774#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -562,11 +555,10 @@
         <state line="117" column="83" selection-start="3260" selection-end="3260" vertical-scroll-proportion="0.0" vertical-offset="1904" max-vertical-offset="1904">
           <folding>
             <element signature="e#499#512#0" expanded="true" />
-            <element signature="e#1365#1432#0" expanded="false" />
-            <element signature="e#1500#2560#0" expanded="false" />
-            <element signature="e#2963#3649#0" expanded="false" />
-            <element signature="e#3705#6554#0" expanded="false" />
-            <element signature="e#6592#6728#0" expanded="false" />
+            <element signature="e#1546#2606#0" expanded="false" />
+            <element signature="e#3009#3695#0" expanded="false" />
+            <element signature="e#3751#6600#0" expanded="false" />
+            <element signature="e#6638#6774#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -586,6 +578,19 @@
         <state line="1531" column="0" selection-start="60412" selection-end="60412" vertical-scroll-proportion="1.225084" vertical-offset="28206" max-vertical-offset="29440" />
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/SuperLED.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="41" column="20" selection-start="1449" selection-end="1449" vertical-scroll-proportion="0.0" vertical-offset="359" max-vertical-offset="2145">
+          <folding>
+            <element signature="e#499#512#0" expanded="true" />
+            <element signature="e#1546#2606#0" expanded="false" />
+            <element signature="e#3009#3695#0" expanded="false" />
+            <element signature="e#3751#6600#0" expanded="false" />
+            <element signature="e#6638#6774#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/SuperLED_data.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="1764" max-vertical-offset="2490">
@@ -595,22 +600,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/SuperLED_lib.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="34" column="12" selection-start="676" selection-end="676" vertical-scroll-proportion="0.0" vertical-offset="12" max-vertical-offset="1460">
+        <state line="61" column="20" selection-start="2036" selection-end="2036" vertical-scroll-proportion="0.71428573" vertical-offset="525" max-vertical-offset="1050">
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/SuperLED.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="252" column="0" selection-start="8270" selection-end="8270" vertical-scroll-proportion="3.180934" vertical-offset="0" max-vertical-offset="2100">
-          <folding>
-            <element signature="e#499#512#0" expanded="true" />
-            <element signature="e#1365#1432#0" expanded="false" />
-            <element signature="e#1500#2560#0" expanded="false" />
-            <element signature="e#2963#3649#0" expanded="false" />
-            <element signature="e#3705#6554#0" expanded="false" />
-            <element signature="e#6592#6728#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>

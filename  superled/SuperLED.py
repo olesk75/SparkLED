@@ -30,7 +30,7 @@ for i in range(256):
 	led_buffer[i] = [None] * 3      # 256 x 3 list
 
 DEBUG = 1       # Increase verbosity
-OFFLINE = 0     # Don't write to serial port
+OFFLINE = 1     # Don't write to serial port
 
 ser = serial.Serial()   # Preparing the global serial object, ser
 
@@ -38,7 +38,8 @@ ser = serial.Serial()   # Preparing the global serial object, ser
 # noinspection PyUnusedLocal,PyUnusedLocal,PyShadowingNames
 def signal_handler(signal, frame):
 		print('Interrupted manually, aborting')
-		ser.close()
+		if not OFFLINE: ser.close()
+		if OFFLINE: curses.endwin()
 		sys.exit(0)
 signal.signal(signal.SIGINT, signal_handler)
 
@@ -240,7 +241,6 @@ def effects():
 			hls = list(colorsys.rgb_to_hls(rgb[0] / 256, rgb[1] / 256, rgb[2] / 256))  # Color coordinates have values 0-1 and are floats
 			if hls[1] > 0:
 				fade_factor = 1 - (1 / 32) * effects.progress
-				print(fade_factor)
 				hls[1] *= fade_factor
 				if hls[1] < 0: hls[1] = 0
 			rgb = list(colorsys.hls_to_rgb(hls[0], hls[1], hls[2]))   # Color coordinates have values 0-1 and are floats
