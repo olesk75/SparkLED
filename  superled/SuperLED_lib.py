@@ -3,6 +3,7 @@ __author__ = 'olesk'
 import curses
 import time
 
+
 def bin_print(x):
 
 	print("x is:", type (x), "value:",x)
