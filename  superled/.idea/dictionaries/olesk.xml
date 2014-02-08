@@ -4,9 +4,11 @@
       <w>arduino</w>
       <w>bbuffer</w>
       <w>bytearrays</w>
+      <w>display's</w>
       <w>fader</w>
       <w>leds</w>
       <w>olesk</w>
+      <w>rgba</w>
       <w>rgbbuffer</w>
       <w>scroller</w>
       <w>superled</w>

@@ -1,23 +1,13 @@
 __author__ = 'olesk'
 
 import curses
-import time
+import sys
+import threading
+from PIL import Image
+import SuperLED_data
 
+from SuperLED_globals import *
 
-def bin_print(x):
-
-	print("x is:", type (x), "value:",x)
-	print()
-	#print(int(x))
-	#left = x >> 4
-	#left &= 0xff       # Masking out all but first 4 bits
-	#right = x & 0xff
-	#print(left)
-	#print(right)
-
-	#print(bytes("{0:08b}".format(x), 'ascii'))
-
-	return bytes("{0:08b}".format(x), 'ascii')
 
 
 def curses_draw(buffer):
@@ -63,5 +53,69 @@ def curses_draw(buffer):
 	screen.refresh()
 	#time.sleep(0.1)
 
-
 	return
+
+
+
+
+
+def init_thread(thread_function):
+	t = threading.Thread(target=thread_function)
+	t.daemon = True  # thread dies when main thread (only non-daemon thread) exits.
+	t.start()
+
+
+def transmit_loop(): # TODO: Implement timer that checks for minimum intervall between transmissons
+	"""
+	The main LED update loop that runs perpetually.
+	"""
+	#global transmit_flag
+	#global led_buffer
+
+	while True:
+		if type(led_buffer[0][0]) is not int: transmit_flag = 0     # We skip if the led_buffer is not ready yet
+		if transmit_flag:
+			transmit_flag = 0   # Make sure we don't end up sending several times on top of eachother
+								# Means we must actively set transmit_flag = 1 in outside code
+			draw_screen()
+
+
+def pure_pil_alpha_to_color_v2(image, color=(255, 255, 255)):
+	"""Alpha composite an RGBA Image with a specified color.
+
+	Simpler, faster version than the solutions above.
+
+	Source: http://stackoverflow.com/a/9459208/284318
+
+	Keyword Arguments:
+	image -- PIL RGBA Image object
+	color -- Tuple r, g, b (default 255, 255, 255)
+
+	"""
+	image.load()  # needed for split()
+	background = Image.new('RGB', image.size, color)
+	background.paste(image, mask=image.split()[3])  # 3 is the alpha channel
+	return background
+
+def blank(ser):
+	"""
+	Blanks the LED display by sending a zero ('Z') code to the Arduino
+	@param ser: serial link
+	"""
+	global transmit_flag
+
+	if OFFLINE: return()
+
+	transmit_flag = 0   # We need to make sure we don't mess with the normal screen update
+
+	if ser.write(b'Z') != 1:
+		print("- Zero code 'G' failed in Blank()")
+		sys.exit("Unable to send go code to Arduino in Blank()")
+
+	response = ser.read(size=1)
+
+	if response == b'A':
+		print("Arduino >> Zero code acknowledged!")
+	else:
+		print("- Zero code NOT acknowledged by Arduino in Blank() - aborting...")
+		sys.exit()
