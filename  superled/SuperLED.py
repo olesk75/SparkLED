@@ -23,7 +23,7 @@ baud_rate   = 400000                  # We get about 1B per 10baud, so with 500'
 NUM_LEDS    = 256
 
 DEBUG = 1       # Increase verbosity
-OFFLINE = 0     # Don't write to serial port
+OFFLINE = 1     # Don't write to serial port
 
 
 # noinspection PyUnusedLocal,PyUnusedLocal,PyShadowingNames
@@ -126,7 +126,7 @@ def draw_screen():
 			sys.exit()
 
 
-def text_to_buffer(display_text, red, green, blue):     # TODO: We need to reduce space between letters
+def text_to_buffer(display_text, red, green, blue):
 	"""
 	Creates a buffer (in display_buffer) that contains the full text
 	@rtype : length of text string (letters)
@@ -163,17 +163,21 @@ def text_to_buffer(display_text, red, green, blue):     # TODO: We need to reduc
 
 	display_buffer = []
 
-	for msg_line in msg_buffer: # Each element in the msg_buffer is a bytearray line
-		pixel_counter = 0
+	for msg_line in msg_buffer:		# Each element in the msg_buffer is a bytearray line
 		for pixel in msg_line:
 		# First we split each byte of pixels into separate pixels and adds a 1 or 0 three times (since we later will add 3 colors to each LED)
 			for bin_pos in range(8):
 				first = pixel >> 7 - bin_pos
-				first &= 1
+				first &= 0x01
 				display_buffer.append([first] * 3)    # 1 or 0 is added 3 times to make it easier to add colors later
 
 
 	# display_buffer is a list of lists, each inner list consisting of 3 ints, each of these 1 or 0
+
+	# We iterate through the display_buffer. We can cheat, as we know each letter in the standard for is 16x16 pixels (with plenty of space on both side).
+	# Thus we simply remove the two first and last colums for each letter.
+	# TODO: Remove columns here to reduce space between letters
+
 	# We can now multiply all the inner lists with the right color values
 
 	for led in display_buffer:
@@ -233,35 +237,6 @@ def scroll_display_buffer(string_length, speed, aa = True):
 
 
 
-
-def clock(): # WIP
-	font_tiny = SuperLED_data.font3x5
-	n = [None] * 10           # The list of bytes to be sent to curses or Arduino
-	num = [None] * 10
-	for i in range(10 + 1):
-		num[i] = [None] * 3      # 10 x 3 list
-
-	for j in range(11):
-		n[j] = font_tiny[j * 5: j * 5 + 5]
-
-		# n[0..10] now has the
-		print (n[j])
-
-		for bin_pos in range(8):
-			first = pixel >> 7 - bin_pos
-			first &= 1
-			display_buffer.append([first] * 3)    # 1 or 0 is added 3 times to make it easier to add colors later
-
-	# Got all the numbers in their respective lists - must find time
-
-	date_time = datetime.today()
-	date_time = date_time.timetuple()
-	print(date_time[0])
-	print(date_time[1])
-	print(date_time[2])
-	print(date_time[3])
-
-	return
 # noinspection PyUnresolvedReferences
 
 
@@ -277,12 +252,12 @@ def effects():
 		Due to the LEDs on this particular display being in a zigzag pattern, we need to reverse the orientation of
 		every second line. 1,3,5,7,9,11,13,15 to be precise. But *without* reversing the byte values.
 	"""
+	if not OFFLINE:
+		for line in range(1,16,2):  # Every second line from 1 to and including 15
+			for led in range(16-1, -1, -1):
+				line_buffer[15 - led] = transmit_buffer[line * 16 + led]
 
-	for line in range(1,16,2):  # Every second line from 1 to and including 15
-		for led in range(16-1, -1, -1):
-			line_buffer[15 - led] = transmit_buffer[line * 16 + led]
-
-		transmit_buffer[line * 16:line * 16 + 16] = line_buffer[0:16]
+			transmit_buffer[line * 16:line * 16 + 16] = line_buffer[0:16]
 
 
 
@@ -395,10 +370,115 @@ def ext_effect(effect, effect_value = None):
 		print("Arduino >> Effect completed successfully")
 
 
+def clock(color):
+	"""
+	Displays real-time clock on display using tiny 3x5 font
+	@param color: font color
+	@return:
+	"""
+	global led_buffer
+	global transmit_flag
+	global abort_flag
+
+	font_tiny = list(SuperLED_data.numfont3x5)
+	black = [0,0,0]
+
+
+	n = [None] * 10
+	for j in range(10):
+		n[j] = [[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],
+				[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],
+				[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]
+
+	for number in range(10):
+		for byte_value in range(5):
+				if font_tiny[byte_value + number * 5] & 0b0100:
+					n[number][0 + byte_value * 3] = color
+				else:
+					n[number][0 + byte_value * 3] = black
+
+				if font_tiny[byte_value + number * 5] & 0b0010:
+					n[number][1 + byte_value * 3] = color
+				else: n[number][1 + byte_value * 3] = black
+
+				if font_tiny[byte_value + number * 5] & 0b0001:
+					n[number][2 + byte_value * 3] = color
+				else:
+					n[number][2 + byte_value * 3] = black
+
+
+	# TODO: We got all the numbers in place now. Next is placing them on the display.
+
+
+	# For debugging
+	while not abort_flag:
+
+		# Got all the numbers in their respective lists - must find time
+
+		date_time = datetime.today()
+		date_time = date_time.timetuple()
+
+		month = list(map(int, str(date_time[1])))
+		day	= list(map(int, str(date_time[2])))
+		hour =list(map(int, str(date_time[3])))
+		minute = list(map(int, str(date_time[4])))
+
+		minute = [8]
+
+		if len(month) == 1: month = [0] + month
+		if len(day) == 1: day = [0] + day
+		if len(hour) == 1: hour = [0] + hour
+		if len(minute) == 1: minute = [0] + minute
+
+		# Screen layout:
+		# 	16 x 16: we need 3 leds per number, with 1 led in between each, four numbers across: xxx0 xxx0 0xxx 0xxx - in the double zeron in the middle we have : or / for presentation
+		#	Vertically we have 5 lines per number: 3 rows with only one space. Probably better to only do two rows (hh:mm and dd:MM), perhaps with a line between: 0NNN NN0L 0NNN NN00
+		# TODO: Anti-aliasing to be considered lates
+		transmit_flag = 0 	# To avoid flicker
+
+		# First 5 rows of numbers (hh:mm)
+		led_buffer[0:16] = [black] * 16		# First we add one blank line
+		offset = 1
+
+		for line in range(offset, 6):
+			led_buffer[line * 16 + 0:line * 16 + 3] = n[hour[0]][(line - offset) * 3:(line - offset) * 3 + 3]
+			led_buffer[line * 16 + 3] = black
+			led_buffer[line * 16 + 4:line * 16 + 7] = n[hour[1]][(line - offset) * 3:(line - offset) * 3 + 3]
+			led_buffer[line * 16 + 7] = black
+
+			led_buffer[line * 16 + 8] = black
+			led_buffer[line * 16 + 9:line * 16 + 12] = n[minute[0]][(line - offset) * 3:(line - offset) * 3 + 3]
+			led_buffer[line * 16 + 12] = black
+			led_buffer[line * 16 + 13:line * 16 + 16] = n[minute[1]][(line - offset) * 3:(line - offset) * 3 + 3]
+
+		led_buffer[6 * 16:9 * 16] = [black] * 16 * 3		# Three blank lines
+
+		offset = 9
+
+		for line in range(offset, 14):
+			led_buffer[line * 16 + 0:line * 16 + 3] = n[day[0]][(line - offset) * 3:(line - offset) * 3 + 3]
+			led_buffer[line * 16 + 3] = black
+			led_buffer[line * 16 + 4:line * 16 + 7] = n[day[1]][(line - offset) * 3:(line - offset) * 3 + 3]
+			led_buffer[line * 16 + 7] = black
+
+			led_buffer[line * 16 + 8] = black
+			led_buffer[line * 16 + 9:line * 16 + 12] = n[month[0]][(line - offset) * 3:(line - offset) * 3 + 3]
+			led_buffer[line * 16 + 12] = black
+			led_buffer[line * 16 + 13:line * 16 + 16] = n[month[1]][(line - offset) * 3:(line - offset) * 3 + 3]
+
+		led_buffer[16 * 14:16 * 16] = [black] * 16 * 2
+
+		transmit_flag = 1 	# To avoid flicker
+
+		#print(len(led_buffer)/16)
+		#print(led_buffer)
+		sleep(1)
+	return
 
 
 """
 	Main code block
+
 """
 if __name__ == "__main__":  # Making sure we don't have problems if importing from this file as a module
 
@@ -417,11 +497,11 @@ if __name__ == "__main__":  # Making sure we don't have problems if importing fr
 
 	#effects.active_effect = 'down'         # Sets the currently active effect
 
-	text_length = text_to_buffer("Scrolling is fun!?!", 100, 10, 10)   # This runs until abort_flag is set
+	#text_length = text_to_buffer("Scrolling is fun!?!", 100, 10, 10)   # This runs until abort_flag is set
 
-	scroll_display_buffer(text_length, 1)
+	#scroll_display_buffer(text_length, 1)
 
-	#clock()
+	clock([128,0,0])
 
 	#show_img('images/clock_ringing.png', led_buffer)
 	#show_img('images/bell.png', led_buffer)
