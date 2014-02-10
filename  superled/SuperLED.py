@@ -17,12 +17,10 @@ from datetime import datetime
 from copy import deepcopy
 
 
-
 # Global variable definitions
 serial_port = '/dev/tty.usbmodem411'
 baud_rate   = 400000                  # We get about 1B per 10baud, so with 500'000 we get about 50'000B/sec, which is a theoretical frame rate of 65 frames per second
 NUM_LEDS    = 256
-
 
 DEBUG = 1       # Increase verbosity
 OFFLINE = 0     # Don't write to serial port
@@ -39,7 +37,6 @@ def signal_handler(signal, frame):
 	sys.exit(0)
 
 
-
 def transmit_loop(): # TODO: Implement timer that checks for minimum intervall between transmissons
 	"""
 	The main LED update loop that runs perpetually.
@@ -51,7 +48,7 @@ def transmit_loop(): # TODO: Implement timer that checks for minimum intervall b
 		if transmit_flag:
 			transmit_flag = 0   # Make sure we don't end up sending several times on top of eachother
 								# Means we must actively set transmit_flag = 1 in outside code
-			draw_screen(led_buffer)
+			draw_screen()
 
 
 def initialize():
@@ -65,7 +62,12 @@ def initialize():
 
 	print("- Initializing at", baud_rate, " baud on ", serial_port)
 
-	ser = serial.Serial(serial_port, baud_rate,timeout=1)    # This will cause the Arduino to reset. We need to give it two seconds
+	try:
+		ser = serial.Serial(serial_port, baud_rate,timeout=1)    # This will cause the Arduino to reset. We need to give it two seconds
+	except:
+		print("ERROR: Opening of serial port ", serial_port, "at", baud_rate, "baud failed, aborting...")
+		exit(-1)
+
 	sleep(2)    # Arduino really needs at least this before being able to receive
 	response = b''
 	while response != b'S':
@@ -94,11 +96,8 @@ def initialize():
 	print("--- INITIALIZATION COMPLETE ---\n")
 
 
-
-
-
 # noinspection PyShadowingNames,PyShadowingNames
-def draw_screen(display_buffer):
+def draw_screen():
 	if OFFLINE:
 		curses_draw(effects())
 	else:
@@ -127,20 +126,22 @@ def draw_screen(display_buffer):
 			sys.exit()
 
 
-# TODO: To make the scroller smooth, we need to implement "anti-aliased scrolling", that is, we need a (or several) intermediate steps
-# TODO: Reference here: http://pastebin.com/yAgKs0Ay
-# step where we partially light
-def scroller(scroll_text, red, green, blue, speed):
-	global NUM_LEDS
-	global transmit_flag
-	global abort_flag
-	global led_buffer
+def text_to_buffer(display_text, red, green, blue):     # TODO: We need to reduce space between letters
+	"""
+	Creates a buffer (in display_buffer) that contains the full text
+	@rtype : length of text string (letters)
+	@param display_text: The text we will put in the display_buffer (which can be of arbitrary size, unlike the led_buffer (which is always 16*16*3)
+	@param red: red value (0-255)
+	@param green: green value (0-255)
+	@param blue: blue value (0-255)
+	"""
+	global display_buffer		# Global since we update it
 
 	font = SuperLED_data.font1
 
 	# We "cheat" by adding a padding space at the beginning and end, which will allow us to smoothly scroll the last letter off the screen
 	# with a 16x16 font and the first onto the screen
-	scroll_text = " " + scroll_text + " "
+	display_text = " " + display_text + " "
 
 	# We now build a large array of our text
 	letter_counter = 0
@@ -148,7 +149,7 @@ def scroller(scroll_text, red, green, blue, speed):
 	# We use 16 (one for each line) bytearrays to store the letter, and add new ones at the end
 	msg_buffer = [bytearray()] * 16     # List of 16 bytearrays
 
-	for letter in scroll_text:  # Letter loop
+	for letter in display_text:  # Letter loop
 		font_index = (ord(letter) - 32) * 32    # ASCII - 32 is start of our fonts, and each font is 32 bytes (256 bits/monochrome pixels)
 		text_buffer = font[font_index:(font_index + 32)]
 
@@ -180,31 +181,57 @@ def scroller(scroll_text, red, green, blue, speed):
 		led[1] *= green
 		led[2] *= blue
 
+	return len(display_text)
+
+
+def scroll_display_buffer(string_length, speed, aa = True):
+	"""
+	Scrolls whatever is in display_buffer left until interrupted by a True abort_flag
+	NOTE: Only works for single color with anti-aliasing
+	@param string_length: number of number of full 16x16 blocks (normally characters)
+	@param speed: scroll speed (1 - 10)
+	@param aa: anti-alias intermediate steps (True / False)
+	"""
+	global led_buffer
+	global transmit_flag
 
 	values_per_line = len(display_buffer) / 16  # The number og LED value COLUMNS  we have to display, which must finally be compied to the led_buffer
-
-
 	while not abort_flag:   # Runs until abort_flag gets set
 
 		cutoff = values_per_line - 16  # how much we need to skip from each line to make the data fit into screen buffer
 
-		for scroll_offset in range(len(scroll_text) * 16 - 16):
+
+		for scroll_offset in range(string_length * 16 - 16):
 			for line in range(16):
 
 				visible_start = int(line * (16 + cutoff)) + scroll_offset      # Start (in the display_buffer) of the visible line
 				visible_end = int(line * (16 + cutoff) + 16) + scroll_offset   # End (in the display_buffer) of the visible line
-
 				visible_line = display_buffer[visible_start: visible_end]
 
-				#print("Visible line", visible_line)
-
-				transmit_flag = 0   # Disabling transmission of data while updating led_buffer
-				for rgb in range(16):
+				# After each "virtual scroll left" we need to update the screen
+				for rgb in range(16):		# We go through one full row at a time
 					led_buffer[line * 16 + rgb] = visible_line[rgb]
-				transmit_flag = 1   # Ready to transmit through thread
+
+			# Display has now been moved one step to the left, and we are ready to display
+			transmit_flag = 1
+
+			if aa:
+				led_buffer_original = led_buffer[:]     # We need to pass the unchanged buffer as well
+				for anti_alias_step in range(10):       # We now anti-alias scroll everything one pixel to the left to make it smooth, in 10 steps
+					led_buffer = anti_alias_left_10(led_buffer, led_buffer_original, anti_alias_step)
+
+					transmit_flag = 1   # We send the intermediate step to the screen
+
+					sleep(0.01)          # TODO: link to speed argument
+
+			# The led_buffer is now scrolled one step to the left - we then repeat the loop
+			# This replaces the anti-alias scrolled buffer with the "real" one, which is identical except it also adds a new column to the right
+			# from the display_buffer (where we keep our text / graphics)
+
+			if not aa: sleep(0.1)      # TODO: Link to speed argument
+	return
 
 
-			sleep(0.2  - 0.19 * (speed / 10))
 
 
 def clock(): # WIP
@@ -369,26 +396,30 @@ def ext_effect(effect, effect_value = None):
 
 
 
+
 """
 	Main code block
 """
 if __name__ == "__main__":  # Making sure we don't have problems if importing from this file as a module
 
-	signal.signal(signal.SIGINT, signal_handler)    # Setting up th signal handler
 
+	signal.signal(signal.SIGINT, signal_handler)    # Setting up th signal handler
+	
 	effects.active_effect = 'none'                  # Static variable that contains the active effect - stays between funtion calls
 	effects.progress = 0                            # Static variable that measures the progress of the active effect - stays between funtion calls
 	draw_screen.updates = 0                         # We need to set this variable AFTER the funtion definition
 	abort_flag = 0                                  # True if we want to abort current execution
-
+	
 	initialize()                            # Setting up serial connection if not OFFLINE
-	blank(ser)                              # Blanks the LED display if not OFFLINE
+	#blank(ser)                              # Blanks the LED display if not OFFLINE
+	transmit_flag = 0
 	init_thread(transmit_loop)              # Starts main transmit thread - to LED if not OFFLINE, curses otherwise
 
 	#effects.active_effect = 'down'         # Sets the currently active effect
 
+	text_length = text_to_buffer("Scrolling is fun!?!", 100, 10, 10)   # This runs until abort_flag is set
 
-	scroller("Amelie rocks!", 100, 10, 10, 5)   # This runs until abort_flag is set
+	scroll_display_buffer(text_length, 1)
 
 	#clock()
 
@@ -400,7 +431,7 @@ if __name__ == "__main__":  # Making sure we don't have problems if importing fr
 	#ext_effect('brightness', 64)
 
 	#ext_effect('hw_test')
-	#scroller("Amelie rocks!", 100, 10, 10, 5)
+	#scroller("Scrolling is fun!", 100, 10, 10, 5)
 	print("\n####################################\nAt END - shouldn't be here ... ever!")
 
 	#while 1: pass   # We only exit via signal
