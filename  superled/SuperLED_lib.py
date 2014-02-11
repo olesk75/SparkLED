@@ -1,14 +1,12 @@
 __author__ = 'olesk'
 
-from SuperLED_globals import *
-import SuperLED_data
-
+import SuperLED_globals as glob
 import curses
 import sys
 import threading
 from PIL import Image
 import colorsys
-import SuperLED_data
+
 
 
 
@@ -73,14 +71,11 @@ def transmit_loop(): # TODO: Implement timer that checks for minimum intervall b
 	"""
 	The main LED update loop that runs perpetually.
 	"""
-	#global transmit_flag
-	#global led_buffer
-
 	while True:
-		if type(led_buffer[0][0]) is not int: transmit_flag = 0     # We skip if the led_buffer is not ready yet
-		if transmit_flag:
-			transmit_flag = 0   # Make sure we don't end up sending several times on top of eachother
-								# Means we must actively set transmit_flag = 1 in outside code
+		if type(glob.led_buffer[0][0]) is not int: glob.transmit_flag = 0     # We skip if the glob.led_buffer is not ready yet
+		if glob.transmit_flag:
+			glob.transmit_flag = 0   # Make sure we don't end up sending several times on top of eachother
+								# Means we must actively set glob.transmit_flag = 1 in outside code
 
 
 def pure_pil_alpha_to_color_v2(image, color=(255, 255, 255)):
@@ -106,11 +101,9 @@ def blank(ser):
 	Blanks the LED display by sending a zero ('Z') code to the Arduino
 	@param ser: serial link
 	"""
-	global transmit_flag
+	if glob.OFFLINE: return()
 
-	if OFFLINE: return()
-
-	transmit_flag = 0   # We need to make sure we don't mess with the normal screen update
+	glob.transmit_flag = 0   # We need to make sure we don't mess with the normal screen update
 
 	if ser.write(b'Z') != 1:
 		print("- Zero code 'G' failed in Blank()")
@@ -203,3 +196,62 @@ def anti_alias_left_10(buffer, original_buffer, current_step):      # TODO: Conv
 					buffer[cur_pixel] = rgb_set_brightness(color, bright * (1 - change))				# We migrate OFF pixel from the right onto this one (if it's already lit -> no change)
 
 		return buffer
+
+
+
+def get_line(x1, y1, x2, y2):
+	"""
+	Bresenham's Line Algorithm
+	@param x1: x1
+	@param y1: y1
+	@param x2: x2
+	@param y2: y2
+	@return: points list
+	"""
+	points = []
+	is_steep = abs(y2 - y1) > abs(x2 - x1)
+	if is_steep:
+		x1, y1 = y1, x1
+		x2, y2 = y2, x2
+	rev = False
+	if x1 > x2:
+		x1, x2 = x2, x1
+		y1, y2 = y2, y1
+		rev = True
+	delta_x = x2 - x1
+	delta_y = abs(y2 - y1)
+	error = int(delta_x / 2)
+	y = y1
+	y_step = None
+	if y1 < y2:
+		y_step = 1
+	else:
+		y_step = -1
+	for x in range(x1, x2 + 1):
+		if is_steep:
+			points.append((y, x))
+		else:
+			points.append((x, y))
+		error -= delta_y
+		if error < 0:
+			y += y_step
+			error += delta_x
+	# Reverse the list if the coordinates were reversed
+	if rev:
+		points.reverse()
+	return points
+
+
+def draw_line(x1, y1, x2, y2):
+	for coordinate in get_line(x1,y1,x2,y2):
+		put_pixel(coordinate[0], coordinate[1], [255,0,0])
+
+
+def put_pixel(x, y, color):
+	"""
+	put_pixel injects a single pixel into the display_buffer
+	@param x: x coordinate (0-15)
+	@param y: y coordinate (0-15)
+	@param color: list [r, g, b]
+	"""
+	glob.led_buffer[x + y * 16] = color
