@@ -33,7 +33,7 @@ def signal_handler(signal, frame):
 	global ser
 	import sys
 	print('- Interrupted manually, aborting')
-	blank(ser)
+	blank()
 	if not glob.OFFLINE: ser.close()
 	if glob.OFFLINE: curses.endwin()
 	sys.exit(0)
@@ -284,14 +284,20 @@ def effects():
 	return buffer
 
 
-def show_img(image, brightness = 128):
+def show_img(image, brightness = 128, animate = False):
 	"""
 	Displays an image (16x16) on the LED display. Will blend with black if alpha. Supports animated images
 	@param image: File name (relative or abs path)
 	"""
 	alpha_channel = bool
 	animated = bool
+	run = True      # We set this flag to False after first run if there is no animation
 
+	# What we have learned so far:
+	# PNG: No problem! 256 tuples of rgb translates easy into led_buffer
+	# GIF: First we seek() the first image (even if there is only one), wich gives us a grayscale version of the image,
+	#       then we have to perform some magic to get the color in. This because GIFs store their color palette data in a
+	#       palette table, with each pixel value a reference to this table. So to get to led_buffer we need to convert this
 
 	try:
 		img = Image.open(image)
@@ -301,42 +307,49 @@ def show_img(image, brightness = 128):
 	if not (img.size[0] == img.size[1] == 16):
 		sys.exit("ERROR: Only accept 16x16 images")
 
+	ext_effect('brightness', brightness)
+
+
 	if 'duration' in img.info: animated = True
+
+
 
 	if img.mode in ('RGBA', 'LA'):		# Image has alpha channel - which we merge with black
 		if glob.DEBUG: print("Image", img, "had alpha layer - converted to black")
 		img = pure_pil_alpha_to_color_v2(img, color=(0, 0, 0))
 
-	pixels = list(img.getdata())    # Returns single list of 256 rgb tuples
+	while run:
+		if not animated: run = False        # No animation -> only one run
+		final_img = img
 
-	if glob.DEBUG:
-		if animated: print("Image duration is",  img.info)
-		print("pixels are datatype:", type(pixels), "of", len(pixels), "length, each a", type(pixels[0]),". Content:\n", pixels)
+		if img.format == "GIF":
+			final_img = img.convert()     # This adds palette data to GIFs (otherwise monochrome)
 
-	# We convert the list of RGB tuples into a list of RGB lists
-	rgb_pixels = [None] * 256
+		# TODO: img = img.filter(ImageFilter.GaussianBlur(radius=1))
 
-	if type(pixels[0]) == tuple:
+		pixels = list(final_img.getdata())    # Returns single list of 256 rgb tuples
+
+
+
+		#if animated: print("Image duration is",  img.info)
+			#print("pixels are datatype:", type(pixels), "of", len(pixels), "length, each a", type(pixels[0]),". Content:\n", pixels)
+
+		# We convert the list of RGB tuples into a list of RGB lists
+		rgb_pixels = [None] * 256
+
 		for n in range(256):
 			rgb_pixels[n] = list(pixels[n])
 
-	if type(pixels[0]) == int:
-		for n in range(256):
-			rgb_pixels[n] = [pixels[n + 0], pixels[n + 1], pixels[n + 2]]
+		glob.led_buffer = rgb_pixels
+		glob.transmit_flag = 1
 
-	print(rgb_pixels)
+		if animated:
+			sleep(img.info['duration'] / 1000)      # Waiting for time stipulated in GIF
 
-	if glob.DEBUG:
-		print("-> ", rgb_pixels)
-		print(len(rgb_pixels))
-
-	ext_effect('brightness', brightness)
-
-	print("Putting image on screen")
-
-	glob.led_buffer = rgb_pixels
-	glob.transmit_flag = 1
-	if glob.DEBUG: sleep(1)
+			try:
+				img.seek(img.tell() + 1)        # Seeking to next frame in animated gif
+			except EOFError:        # We've read the last frame
+				run = False
 
 
 def ext_effect(effect, effect_value = None):
@@ -514,13 +527,15 @@ if __name__ == "__main__":  # Making sure we don't have problems if importing fr
 	#scroll_display_buffer(text_length, 1)
 
 	#clock_digital([128,0,0])
-	blank(glob.ser)
+	blank()
 
 
-	show_img('images/bell.png', 30)
-	#show_img('images/pig2.gif' )
+	#show_img('images/bell.png', 30, False)
+	show_img('images/walking.gif', 30, True)
+	#show_img('images/bubble.gif', 30, False)
+	while True:
+		show_img('images/alarm.gif', 30, True)
 
-	sleep(1)
 
 	#ext_effect('brightness', 64)
 

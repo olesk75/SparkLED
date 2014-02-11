@@ -4,7 +4,7 @@ import SuperLED_globals as glob
 import curses
 import sys
 import threading
-from PIL import Image
+from PIL import Image, ImageFilter
 import colorsys
 
 
@@ -96,7 +96,7 @@ def pure_pil_alpha_to_color_v2(image, color=(255, 255, 255)):
 	return background
 
 
-def blank(ser):
+def blank():
 	"""
 	Blanks the LED display by sending a zero ('Z') code to the Arduino
 	@param ser: serial link
@@ -105,11 +105,11 @@ def blank(ser):
 
 	glob.transmit_flag = 0   # We need to make sure we don't mess with the normal screen update
 
-	if ser.write(b'Z') != 1:
+	if glob.ser.write(b'Z') != 1:
 		print("- Zero code 'G' failed in Blank()")
 		sys.exit("Unable to send go code to Arduino in Blank()")
 
-	response = ser.read(size=1)
+	response = glob.ser.read(size=1)
 
 	if response == b'A':
 		print("Arduino >> Zero code acknowledged!")
@@ -120,7 +120,7 @@ def blank(ser):
 	# Since some of these effects can take some time, we wait here until we get 'D'one from the Arduino
 	waiting = True
 	while waiting:
-		if ser.read(size=1) == b'D': waiting = False
+		if glob.ser.read(size=1) == b'D': waiting = False
 
 
 def rgb_adjust_brightness(rgb_values, bright_change):
