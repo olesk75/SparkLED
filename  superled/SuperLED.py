@@ -57,14 +57,13 @@ def initialize():
 	Initializes serial connection based on global variable to keep config in one place
 
 	"""
-	global ser
 
 	if glob.OFFLINE: return()
 
 	print("- Initializing at", glob.baud_rate, " baud on ", glob.serial_port)
 
 	try:
-		ser = serial.Serial(glob.serial_port, glob.baud_rate,timeout=1)    # This will cause the Arduino to reset. We need to give it two seconds
+		glob.ser = serial.Serial(glob.serial_port, glob.baud_rate,timeout=1)    # This will cause the Arduino to reset. We need to give it two seconds
 	except:
 		print("ERROR: Opening of serial port ", glob.serial_port, "at", glob.baud_rate, "baud failed, aborting...")
 		exit(-1)
@@ -72,26 +71,26 @@ def initialize():
 	sleep(2)    # Arduino really needs at least this before being able to receive
 	response = b''
 	while response != b'S':
-		response = ser.read(size=1)
+		response = glob.ser.read(size=1)
 	#print (str(response), end="")
 
 	# Ok, we got 'S' and are ready to start
 	print("- Start code 'S' received from Arduino - ready!")
 
-	if ser.write(b'G') == 1:
+	if glob.ser.write(b'G') == 1:
 		print("- Go code 'G' sent successfully")
 	else:
 		print("- Go code 'G' failed")
-		ser.close()
+		glob.ser.close()
 		sys.exit("Unable to send go code to Arduino")
 
-	response = ser.read(size=1)
+	response = glob.ser.read(size=1)
 	if response != '':
 		if response == b'A':
 			print("- Go code acknowledged by Arduino - ready to rumble!")
 		else:
 			print("- Go code NOT acknowledged by Arduino - aborting...")
-			ser.close()
+			glob.ser.close()
 			sys.exit()
 
 	print("--- INITIALIZATION COMPLETE ---\n")
@@ -103,11 +102,11 @@ def draw_screen():
 		curses_draw(effects())
 	else:
 
-		if ser.write(b'G') != 1:
+		if glob.ser.write(b'G') != 1:
 			print("- Go code 'G' failed")
 			sys.exit("Unable to send go code to Arduino")
 
-		response = ser.read(size=1)
+		response = glob.ser.read(size=1)
 		if response == b'A':
 			pass
 			#print("Arduino: buffer read command received!")
@@ -115,12 +114,12 @@ def draw_screen():
 			print("- Go code NOT acknowledged by Arduino - aborting...")
 			sys.exit()
 
-		ser.write(effects())    # <--- there she goes, notice that even without active effect, we need this to compensate for zigzag LED display
+		glob.ser.write(effects())    # <--- there she goes, notice that even without active effect, we need this to compensate for zigzag LED display
 		if glob.DEBUG:
 			print("Display updates:\033[1m", draw_screen.updates, "\033[0m", end='\r')
 			draw_screen.updates += 1
 
-		response = ser.read(size=1)
+		response = glob.ser.read(size=1)
 
 		if response == b'E':
 			print("Arduino: ERROR - aborting...")
@@ -235,10 +234,6 @@ def scroll_display_buffer(string_length, speed, aa = True):
 	return
 
 
-
-# noinspection PyUnresolvedReferences
-
-
 def effects():
 	"""
 	Adds fancy effects and is responsible to compensating for the display's zigzag pattern of LEDs
@@ -289,11 +284,15 @@ def effects():
 	return buffer
 
 
-def show_img(image):
+def show_img(image, brightness = 128):
 	"""
 	Displays an image (16x16) on the LED display. Will blend with black if alpha. Supports animated images
 	@param image: File name (relative or abs path)
 	"""
+	alpha_channel = bool
+	animated = bool
+
+
 	try:
 		img = Image.open(image)
 	except FileNotFoundError:
@@ -302,30 +301,42 @@ def show_img(image):
 	if not (img.size[0] == img.size[1] == 16):
 		sys.exit("ERROR: Only accept 16x16 images")
 
+	if 'duration' in img.info: animated = True
 
 	if img.mode in ('RGBA', 'LA'):		# Image has alpha channel - which we merge with black
 		if glob.DEBUG: print("Image", img, "had alpha layer - converted to black")
 		img = pure_pil_alpha_to_color_v2(img, color=(0, 0, 0))
 
+	pixels = list(img.getdata())    # Returns single list of 256 rgb tuples
 
-	pixels = list(img.getdata())
+	if glob.DEBUG:
+		if animated: print("Image duration is",  img.info)
+		print("pixels are datatype:", type(pixels), "of", len(pixels), "length, each a", type(pixels[0]),". Content:\n", pixels)
 
-	print(pixels)
-	print(len(pixels))
+	# We convert the list of RGB tuples into a list of RGB lists
+	rgb_pixels = [None] * 256
 
-	rgb_pixels = []
+	if type(pixels[0]) == tuple:
+		for n in range(256):
+			rgb_pixels[n] = list(pixels[n])
 
-	for pixel in pixels:
-		rgb_pixels.append(list(pixels))
+	if type(pixels[0]) == int:
+		for n in range(256):
+			rgb_pixels[n] = [pixels[n + 0], pixels[n + 1], pixels[n + 2]]
 
-	print(len(rgb_pixels))
+	print(rgb_pixels)
+
+	if glob.DEBUG:
+		print("-> ", rgb_pixels)
+		print(len(rgb_pixels))
+
+	ext_effect('brightness', brightness)
+
+	print("Putting image on screen")
 
 	glob.led_buffer = rgb_pixels
-
 	glob.transmit_flag = 1
-	sleep(1)
-
-	return
+	if glob.DEBUG: sleep(1)
 
 
 def ext_effect(effect, effect_value = None):
@@ -341,11 +352,12 @@ def ext_effect(effect, effect_value = None):
 
 	if not glob.OFFLINE:
 
-		if ser.write(hw_effect) != 1:
+		if glob.ser.write(hw_effect) != 1:
 			print("- Sending of effect code,", hw_effect, "failed")
 			sys.exit()
 
-		response = ser.read(size=1)
+		response = glob.ser.read(size=1)
+
 		if response == b'A':
 			if glob.DEBUG: print("Arduino >>", effect, "command acknowledged!")
 		else:
@@ -354,11 +366,11 @@ def ext_effect(effect, effect_value = None):
 
 		if effect_value:    # Could be None
 			# Ok, initial handshake and command is fine, let's send the value
-			if ser.write(value) == -1:
+			if glob.ser.write(value) == -1:
 					print("- Unable to send '", effect, "' value", value, "to Arduino")
 					sys.exit()
 
-			response = ser.read(size=1)
+			response = glob.ser.read(size=1)
 			if response == b'A':    # Value acknowledged
 				if glob.DEBUG: print("Arduino >>", effect, "value acknowledged!")
 			if response == b'E':    # Error reported by Arduino
@@ -371,7 +383,7 @@ def ext_effect(effect, effect_value = None):
 		# Since some of these effects can take some time, we wait here until we get 'D'one from the Arduino
 		waiting = True
 		while waiting:
-			if ser.read(size=1) == b'D': waiting = False
+			if glob.ser.read(size=1) == b'D': waiting = False
 
 		print("Arduino >> Effect completed successfully")
 
@@ -501,9 +513,11 @@ if __name__ == "__main__":  # Making sure we don't have problems if importing fr
 	#text_length = text_to_buffer("Scrolling is fun!?!", 100, 10, 10)   # This runs until glob.abort_flag is set
 	#scroll_display_buffer(text_length, 1)
 
-	clock_digital([128,0,0])
+	#clock_digital([128,0,0])
+	blank(glob.ser)
 
-	#show_img('images/bell.png')
+
+	show_img('images/bell.png', 30)
 	#show_img('images/pig2.gif' )
 
 	sleep(1)

@@ -117,6 +117,11 @@ def blank(ser):
 		print("- Zero code NOT acknowledged by Arduino in Blank() - aborting...")
 		sys.exit()
 
+	# Since some of these effects can take some time, we wait here until we get 'D'one from the Arduino
+	waiting = True
+	while waiting:
+		if ser.read(size=1) == b'D': waiting = False
+
 
 def rgb_adjust_brightness(rgb_values, bright_change):
 	"""
