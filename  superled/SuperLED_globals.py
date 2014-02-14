@@ -4,12 +4,7 @@ __author__ = 'olesk'
 transmit_flag = None
 abort_flag = None
 
-serial_port = None
-baud_rate = None
-
-ser = None
-
-DEBUG = None
+DISPLAY_MODE = 'LED'		# One of 'curses', 'LED' or 'tkinter' - defaults to 'LED'
 OFFLINE = None
 
 led_buffer = [''] * 256           # The list of bytes to be sent to curses or Arduino

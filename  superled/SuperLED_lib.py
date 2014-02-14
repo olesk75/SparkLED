@@ -4,13 +4,101 @@ import SuperLED_globals as glob
 import curses
 import sys
 import threading
+from tkinter import *
 from PIL import Image, ImageFilter
 import colorsys
+from copy import deepcopy
 
 
 
+def tk_draw(buffer):	# TODO: Rebuild with canvas http://www.tutorialspoint.com/python/tk_canvas.htm
+	print("DEBUG: drawing in tk")
+	glob.transmit_flag = 0
+
+	pixel_multiplier = 50
+
+	width, height = 16 * pixel_multiplier, 16 * pixel_multiplier
+
+	root = Tk()
+
+	img = PhotoImage(width=width, height=height)
+
+	x = 0
+	y = 0
+	#color = [str] * 16 * 16
 
 
+
+	print("len(buffer)", len(buffer))
+	for n in range(0, int(len(buffer)), 3):
+		for inner_y in range(pixel_multiplier):
+			for inner_x in range(pixel_multiplier):
+				hex_code = "#%02x%02x%02x" % (buffer[n + 0],buffer[n + 1],buffer[n + 2])
+				img.put(hex_code, (x + inner_x, y + inner_y))
+
+		x += pixel_multiplier
+		if x == 16 * pixel_multiplier:
+			x = 0
+			y += pixel_multiplier
+
+
+
+		#img.put("#ffffff", (x//4,y))
+
+
+	label = Label(root, image=img, bg="#000000")
+	label.grid()
+	root.mainloop()
+
+
+def effects():
+	"""
+	Adds fancy effects and is responsible to compensating for the display's zigzag pattern of LEDs
+	@param glob.led_buffer: the full RGB led buffer
+	@return: updated RGB led buffer ready to transmit
+	"""
+	transmit_buffer = deepcopy(glob.led_buffer) # Required, otherwise glob.led_buffer can get modified by other thread while we're working here
+
+	"""
+		Due to the LEDs on this particular display being in a zigzag pattern, we need to reverse the orientation of
+		every second line. 1,3,5,7,9,11,13,15 to be precise. But *without* reversing the byte values.
+	"""
+	if glob.DISPLAY_MODE == 'LED':
+		for line in range(1,16,2):  # Every second line from 1 to and including 15
+			for led in range(16 - 1, -1, -1):
+				glob.line_buffer[15 - led] = transmit_buffer[line * 16 + led]
+
+			transmit_buffer[line * 16:line * 16 + 16] = glob.line_buffer[0:16]
+
+
+
+	# if effects.active_effect == 'down' and effects.progress < 16:
+	# 	for n in range(effects.progress):
+	# 		#transmit_buffer[(15-n) * 16 : ]
+	# 		pass
+	#
+	#
+	# if effects.active_effect == 'up' and effects.progress < 16:
+	# 	for n in range(effects.progress):
+	# 		buffer = buffer[16 * 3:] + bytes([0] * 16 * 3)
+
+	#if effects.progress == 32:
+	#	effects.progress = 0    # We're done, making ready for another run/effect
+	#	effects.active_effect = 'none'
+	#else: effects.progress += 1
+
+	#
+	# Finally, we convert the whole transmit_buffer list into a string of bytes that we can write to curses/Arduino
+	#
+	buffer = bytearray()
+
+
+	for rgb in transmit_buffer:          # For each led... 256 in total
+		buffer.append(rgb[0])
+		buffer.append(rgb[1])
+		buffer.append(rgb[2])
+
+	return buffer
 
 def curses_draw(buffer):
 	"""
@@ -61,21 +149,67 @@ def curses_draw(buffer):
 
 
 
-def init_thread(thread_function):
-	t = threading.Thread(target=thread_function)
+def init_thread(thread_function, ser):
+	t = threading.Thread(target=thread_function, args = (ser,))
 	t.daemon = True  # thread dies when main thread (only non-daemon thread) exits.
 	t.start()
 
 
-def transmit_loop(): # TODO: Implement timer that checks for minimum intervall between transmissons
+def transmit_loop(ser): # TODO: Implement timer that checks for minimum intervall between transmissons
 	"""
 	The main LED update loop that runs perpetually.
 	"""
 	while True:
 		if type(glob.led_buffer[0][0]) is not int: glob.transmit_flag = 0     # We skip if the glob.led_buffer is not ready yet
+
 		if glob.transmit_flag:
 			glob.transmit_flag = 0   # Make sure we don't end up sending several times on top of eachother
 								# Means we must actively set glob.transmit_flag = 1 in outside code
+			draw_screen(ser)
+
+
+# noinspection PyUnusedLocal,PyUnusedLocal,PyShadowingNames
+def signal_handler(signal, frame):
+	print('- Interrupted manually, aborting')
+	blank(ser)
+	if glob.DISPLAY_MODE == 'LED': ser.close()
+	if glob.DISPLAY_MODE == 'curses': curses.endwin()
+	if glob.DISPLAY_MODE == 'tkinter': pass
+	sys.exit(0)
+
+
+
+# noinspection PyShadowingNames,PyShadowingNames
+def draw_screen(ser):
+	if glob.DISPLAY_MODE == 'curses':
+		curses_draw(effects())
+	if glob.DISPLAY_MODE == 'tkinter':
+		tk_draw(effects())
+
+
+	else:		# We default to LED - meaning we normally use this function to update the LED display - tkinter/curses is for debugging mostly
+		if ser.write(b'G') != 1:
+			print("- Go code 'G' failed")
+			sys.exit("Unable to send go code to Arduino")
+
+		response = ser.read(size=1)
+		if response == b'A':
+			pass
+			#print("Arduino: buffer read command received!")
+		else:
+			print("- Go code NOT acknowledged by Arduino - aborting...")
+			sys.exit()
+
+		ser.write(effects())    # <--- there she goes, notice that even without active effect, we need this to compensate for zigzag LED display
+		if glob.DEBUG:
+			print("Display updates:\033[1m", draw_screen.updates, "\033[0m", end='\r')
+			draw_screen.updates += 1
+
+		response = ser.read(size=1)
+
+		if response == b'E':
+			print("Arduino: ERROR - aborting...")
+			sys.exit()
 
 
 def pure_pil_alpha_to_color_v2(image, color=(255, 255, 255)):
@@ -96,20 +230,20 @@ def pure_pil_alpha_to_color_v2(image, color=(255, 255, 255)):
 	return background
 
 
-def blank():
+def blank(ser):
 	"""
 	Blanks the LED display by sending a zero ('Z') code to the Arduino
 	@param ser: serial link
 	"""
-	if glob.OFFLINE: return()
+	if glob.DISPLAY_MODE != 'LED': return()
 
 	glob.transmit_flag = 0   # We need to make sure we don't mess with the normal screen update
 
-	if glob.ser.write(b'Z') != 1:
+	if ser.write(b'Z') != 1:
 		print("- Zero code 'G' failed in Blank()")
 		sys.exit("Unable to send go code to Arduino in Blank()")
 
-	response = glob.ser.read(size=1)
+	response = ser.read(size=1)
 
 	if response == b'A':
 		print("Arduino >> Zero code acknowledged!")
@@ -120,7 +254,7 @@ def blank():
 	# Since some of these effects can take some time, we wait here until we get 'D'one from the Arduino
 	waiting = True
 	while waiting:
-		if glob.ser.read(size=1) == b'D': waiting = False
+		if ser.read(size=1) == b'D': waiting = False
 
 
 def rgb_adjust_brightness(rgb_values, bright_change):
