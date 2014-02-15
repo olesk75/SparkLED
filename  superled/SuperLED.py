@@ -8,12 +8,10 @@
 # glob.led_buffer : the final 768 elemnt list we send to the arduino
 # glob.transmit_flag : flag that indicates if the transmit thread can send the screen_buffer to the Arduino or if it should wait
 
-from time import sleep
 import signal
 from datetime import datetime
-
-
 import serial
+from time import sleep
 
 from SuperLED_lib import *
 import SuperLED_data
@@ -39,38 +37,38 @@ def initialize(serial_port, baud_rate):
 	print("- Initializing at", baud_rate, " baud on ", serial_port)
 
 	try:
-		ser = serial.Serial(serial_port, baud_rate,timeout=1)    # This will cause the Arduino to reset. We need to give it two seconds
-	except:
-		print("ERROR: Opening of serial port ", serial_port, "at", baud_rate, "baud failed, aborting...")
+		port = serial.Serial(serial_port, baud_rate,timeout=1)    # This will cause the Arduino to reset. We need to give it two seconds
+	except serial.SerialException as error:
+		print("= Fatal error: {0}".format(error))
 		exit(-1)
 
 	sleep(2)    # Arduino really needs at least this before being able to receive
 	response = b''
 	while response != b'S':
-		response = ser.read(size=1)
+		response = port.read(size=1)
 	#print (str(response), end="")
 
 	# Ok, we got 'S' and are ready to start
 	print("- Start code 'S' received from Arduino - ready!")
 
-	if ser.write(b'G') == 1:
+	if port.write(b'G') == 1:
 		print("- Go code 'G' sent successfully")
 	else:
 		print("- Go code 'G' failed")
-		ser.close()
+		port.close()
 		sys.exit("Unable to send go code to Arduino")
 
-	response = ser.read(size=1)
+	response = port.read(size=1)
 	if response != '':
 		if response == b'A':
 			print("- Go code acknowledged by Arduino - ready to rumble!")
 		else:
 			print("- Go code NOT acknowledged by Arduino - aborting...")
-			ser.close()
+			port.close()
 			sys.exit()
 
 	print("--- INITIALIZATION COMPLETE ---\n")
-	return ser
+	return port
 
 
 
@@ -146,11 +144,16 @@ def scroll_display_buffer(string_length, speed, aa = True):
 	@param aa: anti-alias intermediate steps (True / False)
 	"""
 
+	if speed < 1 or speed > 10:		# Sanity checking speed argument
+		print("= Error: scroll speed must be an integer from 1 to 10")
+		exit(1)
+
+	speed = (11 - speed) * 2 / 100
+
 	values_per_line = len(display_buffer) / 16  # The number og LED value COLUMNS  we have to display, which must finally be compied to the glob.led_buffer
 	while not glob.abort_flag:   # Runs until glob.abort_flag gets set
 
 		cutoff = values_per_line - 16  # how much we need to skip from each line to make the data fit into screen buffer
-
 
 		for scroll_offset in range(string_length * 16 - 16):
 			for line in range(16):
@@ -160,8 +163,8 @@ def scroll_display_buffer(string_length, speed, aa = True):
 				visible_line = display_buffer[visible_start: visible_end]
 
 				# After each "virtual scroll left" we need to update the screen
-				for rgb in range(16):		# We go through one full row at a time
-					glob.led_buffer[line * 16 + rgb] = visible_line[rgb]
+				#for rgb in range(16):		# We go through one full row at a time
+				glob.led_buffer[line * 16: line * 16 + 16] = visible_line[:16]
 
 			# Display has now been moved one step to the left, and we are ready to display
 			glob.transmit_flag = 1
@@ -173,14 +176,11 @@ def scroll_display_buffer(string_length, speed, aa = True):
 
 					glob.transmit_flag = 1   # We send the intermediate step to the screen
 
-					sleep(0.01)          # TODO: link to speed argument
+					sleep(speed / 10)          # 0.01 gives a reasonable speed, as weed need 10 of those per "real" left movement
 
-			# The glob.led_buffer is now scrolled one step to the left - we then repeat the loop
-			# This replaces the anti-alias scrolled buffer with the "real" one, which is identical except it also adds a new column to the right
-			# from the display_buffer (where we keep our text / graphics)
-
-			if not aa: sleep(0.1)      # TODO: Link to speed argument
-	return
+			# The glob.led_buffer is now scrolled one step to the left - we then repeat the loop. This replaces the anti-alias scrolled buffer with the "real" one,
+			# which is identical except it also adds a new column to the right from the display_buffer (where we keep our text / graphics)
+			if not aa: sleep(speed)      # TODO: Link to speed argument
 
 
 
@@ -189,9 +189,9 @@ def scroll_display_buffer(string_length, speed, aa = True):
 def show_img(image, brightness = -1):
 	"""
 	Displays an image (16x16) on the LED display. Will blend with black if alpha. Supports animated images
+	TODO: Support animated GIFs with offsets
 	@param image: File name (relative or abs path)
 	"""
-	alpha_channel = bool
 	animated = False
 	run = True      # We set this flag to False after first run if there is no animation
 
@@ -210,7 +210,7 @@ def show_img(image, brightness = -1):
 	if not (img.size[0] == img.size[1] == 16):
 		sys.exit("ERROR: Only accept 16x16 images")
 
-	if brightness != - 1: ext_effect('brightness', brightness)      # The default is to not mess with brightness
+	if brightness != - 1: ext_effect(ser, 'brightness', brightness)      # The default is to not mess with brightness
 
 
 	if 'duration' in img.info:
@@ -245,7 +245,7 @@ def show_img(image, brightness = -1):
 				run = False
 
 
-def ext_effect(effect, effect_value = None):
+def ext_effect(s_port, effect, effect_value = None):
 	glob.transmit_flag = 0
 
 	if effect == 'brightness': hw_effect = b'B'
@@ -257,11 +257,11 @@ def ext_effect(effect, effect_value = None):
 		value = bytes([effect_value])
 
 	if glob.DISPLAY_MODE == 'LED':
-		if ser.write(hw_effect) != 1:
+		if s_port.write(hw_effect) != 1:
 			print("- Sending of effect code,", hw_effect, "failed")
 			sys.exit()
 
-		response = ser.read(size=1)
+		response = s_port.read(size=1)
 
 		if response == b'A':
 			if glob.DEBUG: print("Arduino >>", effect, "command acknowledged!")
@@ -271,11 +271,11 @@ def ext_effect(effect, effect_value = None):
 
 		if effect_value:    # Could be None
 			# Ok, initial handshake and command is fine, let's send the value
-			if ser.write(value) == -1:
+			if s_port.write(value) == -1:
 					print("- Unable to send '", effect, "' value", value, "to Arduino")
 					sys.exit()
 
-			response = ser.read(size=1)
+			response = s_port.read(size=1)
 			if response == b'A':    # Value acknowledged
 				if glob.DEBUG: print("Arduino >>", effect, "value acknowledged!")
 			if response == b'E':    # Error reported by Arduino
@@ -288,7 +288,7 @@ def ext_effect(effect, effect_value = None):
 		# Since some of these effects can take some time, we wait here until we get 'D'one from the Arduino
 		waiting = True
 		while waiting:
-			if ser.read(size=1) == b'D': waiting = False
+			if s_port.read(size=1) == b'D': waiting = False
 
 		print("Arduino >> Effect completed successfully")
 
@@ -340,8 +340,8 @@ def clock_digital(color):
 		date_time = date_time.timetuple()
 
 		month = list(map(int, str(date_time[1])))
-		day	= list(map(int, str(date_time[2])))
-		hour =list(map(int, str(date_time[3])))
+		day = list(map(int, str(date_time[2])))
+		hour = list(map(int, str(date_time[3])))
 		minute = list(map(int, str(date_time[4])))
 
 		minute = [8]
@@ -401,16 +401,18 @@ def clock_digital(color):
 
 if __name__ == "__main__":  # Making sure we don't have problems if importing from this file as a module
 
-
-
 	effects.active_effect = 'none'                  # Static variable that contains the active effect - stays between funtion calls
 	effects.progress = 0                            # Static variable that measures the progress of the active effect - stays between funtion calls
 	draw_screen.updates = 0                         # We need to set this variable AFTER the funtion definition
-	glob.abort_flag = 0                                  # True if we want to abort current execution
+	glob.abort_flag = 0                             # True if we want to abort current execution
 
-	ser = initialize(serial_port, baud_rate)                            # Setting up serial connection if not glob.OFFLINE
+	glob.ser = initialize(serial_port, baud_rate)	# Setting up serial connection if not glob.OFFLINE
+	ser = glob.ser
 	signal.signal(signal.SIGINT, signal_handler)    # Setting up th signal handler
 
+
+	#ext_effect(ser,'hw_test')
+	ext_effect(ser,'brightness', 64)
 
 	glob.transmit_flag = 0
 
@@ -418,8 +420,8 @@ if __name__ == "__main__":  # Making sure we don't have problems if importing fr
 
 	#effects.active_effect = 'down'         # Sets the currently active effect
 
-	#text_length = text_to_buffer("Scrolling is fun!?!", 100, 10, 10)   # This runs until glob.abort_flag is set
-	#scroll_display_buffer(text_length, 1)
+	text_length = text_to_buffer("Scrolling is fun!?!", 100, 10, 10)   # This runs until glob.abort_flag is set
+	scroll_display_buffer(text_length, 5)
 
 	#clock_digital([128,0,0])
 	blank(ser)
@@ -429,10 +431,16 @@ if __name__ == "__main__":  # Making sure we don't have problems if importing fr
 	while True:
 		show_img('images/mario_run.gif')
 		sleep(2)
-		show_img('images/wifi-connecting.gif')
+		while True:
+			show_img('images/radar.gif')
 		sleep(2)
-		#show_img('images/spinner3.gif')
-		#sleep(2)
+		while True:
+			show_img('images/fish.gif')
+		sleep(2)
+		show_img('images/spinner2.gif')
+		sleep(2)
+		show_img('images/spinner3.gif')
+		sleep(2)
 		show_img('images/skull.png')
 		sleep(2)
 		show_img('images/242.gif')
@@ -440,7 +448,6 @@ if __name__ == "__main__":  # Making sure we don't have problems if importing fr
 		show_img('images/padlock.png')
 		sleep(2)
 
-	#ext_effect('brightness', 64)
 
 	#ext_effect('hw_test')
 	#scroller("Scrolling is fun!", 100, 10, 10, 5)

@@ -2,12 +2,12 @@ __author__ = 'olesk'
 
 import SuperLED_globals as glob
 import curses
-import sys
 import threading
 from tkinter import *
-from PIL import Image, ImageFilter
+from PIL import Image
 import colorsys
 from copy import deepcopy
+from time import sleep, time
 
 
 
@@ -141,8 +141,6 @@ def curses_draw(buffer):
 			screen.addstr(line, row, " ", curses.color_pair(bytecolor))
 
 	screen.refresh()
-	#time.sleep(0.1)
-
 	return
 
 
@@ -171,8 +169,8 @@ def transmit_loop(ser): # TODO: Implement timer that checks for minimum interval
 # noinspection PyUnusedLocal,PyUnusedLocal,PyShadowingNames
 def signal_handler(signal, frame):
 	print('- Interrupted manually, aborting')
-	blank(ser)
-	if glob.DISPLAY_MODE == 'LED': ser.close()
+	blank(glob.ser)
+	if glob.DISPLAY_MODE == 'LED': glob.ser.close()
 	if glob.DISPLAY_MODE == 'curses': curses.endwin()
 	if glob.DISPLAY_MODE == 'tkinter': pass
 	sys.exit(0)
@@ -181,6 +179,14 @@ def signal_handler(signal, frame):
 
 # noinspection PyShadowingNames,PyShadowingNames
 def draw_screen(ser):
+	try:
+		draw_screen.start
+	except:
+		draw_screen.start = time()
+
+	if time() - draw_screen.start < 0.033: return       # We cap transfers at about 30 frames/second
+	draw_screen.start = time()
+
 	if glob.DISPLAY_MODE == 'curses':
 		curses_draw(effects())
 	if glob.DISPLAY_MODE == 'tkinter':

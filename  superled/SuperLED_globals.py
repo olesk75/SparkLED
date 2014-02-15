@@ -4,8 +4,11 @@ __author__ = 'olesk'
 transmit_flag = None
 abort_flag = None
 
+ser = None
+
 DISPLAY_MODE = 'LED'		# One of 'curses', 'LED' or 'tkinter' - defaults to 'LED'
 OFFLINE = None
+DEBUG = False
 
 led_buffer = [''] * 256           # The list of bytes to be sent to curses or Arduino
 for i in range(256):
