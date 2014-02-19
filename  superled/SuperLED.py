@@ -1,5 +1,4 @@
-# In Python 3.x the strings are unicode by default. When sending data to Arduino, they have to be converted to bytes.
-# This can be done by prefixing the string with b:
+#!/usr/bin/env python3
 
 # Things to keep in mind.
 
@@ -23,7 +22,7 @@ baud_rate = 400000                  # We get about 1B per 10baud, so with 500'00
 # Global variable definitions
 glob.NUM_LEDS = 256
 glob.DEBUG = 1       # Increase verbosity
-glob.DISPLAY_MODE = 'LED'		# Valid options: 'LED', 'curses', 'tkinter'
+glob.DISPLAY_MODE = 'curses'		# Valid options: 'LED', 'curses', 'tkinter'
 
 
 def initialize(serial_port, baud_rate):
@@ -215,10 +214,8 @@ def show_img(image, brightness = -1):
 
 	if 'duration' in img.info:
 		animated = True
-		print("- Animated")
 
 	if img.mode in ('RGBA', 'LA'):		# Image has alpha channel - which we merge with black
-			if glob.DEBUG: print("- Image", image, "had alpha layer - converted to black")
 			img = pure_pil_alpha_to_color_v2(img, color=(0, 0, 0))      # Note, this destroys the img.info data
 
 	while run:
@@ -412,7 +409,7 @@ if __name__ == "__main__":  # Making sure we don't have problems if importing fr
 
 
 	#ext_effect(ser,'hw_test')
-	ext_effect(ser,'brightness', 64)
+	ext_effect(ser,'brightness', 128)
 
 	glob.transmit_flag = 0
 
@@ -420,33 +417,33 @@ if __name__ == "__main__":  # Making sure we don't have problems if importing fr
 
 	#effects.active_effect = 'down'         # Sets the currently active effect
 
-	text_length = text_to_buffer("Scrolling is fun!?!", 100, 10, 10)   # This runs until glob.abort_flag is set
-	scroll_display_buffer(text_length, 5)
+	#text_length = text_to_buffer("Scrolling is fun!?!", 100, 10, 10)   # This runs until glob.abort_flag is set
+	#init_thread(scroll_display_buffer, text_length, 7)
 
+	#while True: print("I am free")
 	#clock_digital([128,0,0])
-	blank(ser)
+	#blank(ser)
 
+	effects.active_effect = 'rain'
 
 	#show_img('images/bell.png', 30, False)
+	# while True:	show_img('images/fractal.gif')      # "Cheat" to show colorful fractal using animated gif
+	#while True: show_img('images/ikanim.gif')
+
+	sleep(2)
 	while True:
-		show_img('images/mario_run.gif')
-		sleep(2)
-		while True:
-			show_img('images/radar.gif')
-		sleep(2)
-		while True:
-			show_img('images/fish.gif')
-		sleep(2)
-		show_img('images/spinner2.gif')
-		sleep(2)
-		show_img('images/spinner3.gif')
-		sleep(2)
-		show_img('images/skull.png')
-		sleep(2)
-		show_img('images/242.gif')
-		sleep(2)
-		show_img('images/padlock.png')
-		sleep(2)
+		show_img('images/fish.gif')
+	sleep(2)
+	show_img('images/spinner2.gif')
+	sleep(2)
+	show_img('images/spinner3.gif')
+	sleep(2)
+	show_img('images/skull.png')
+	sleep(2)
+	show_img('images/242.gif')
+	sleep(2)
+	show_img('images/padlock.png')
+	sleep(2)
 
 
 	#ext_effect('hw_test')

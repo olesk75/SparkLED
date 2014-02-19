@@ -13,6 +13,7 @@
           <option value="PEP8" />
           <option value="E251" />
           <option value="E126" />
+          <option value="E201" />
         </list>
       </option>
     </inspection_tool>

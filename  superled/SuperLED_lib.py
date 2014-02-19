@@ -8,6 +8,7 @@ from PIL import Image
 import colorsys
 from copy import deepcopy
 from time import sleep, time
+import random
 
 
 
@@ -59,10 +60,13 @@ def effects():
 	"""
 	transmit_buffer = deepcopy(glob.led_buffer) # Required, otherwise glob.led_buffer can get modified by other thread while we're working here
 
+
 	"""
 		Due to the LEDs on this particular display being in a zigzag pattern, we need to reverse the orientation of
 		every second line. 1,3,5,7,9,11,13,15 to be precise. But *without* reversing the byte values.
 	"""
+
+	# Reversing the zigzag pattern
 	if glob.DISPLAY_MODE == 'LED':
 		for line in range(1,16,2):  # Every second line from 1 to and including 15
 			for led in range(16 - 1, -1, -1):
@@ -71,21 +75,21 @@ def effects():
 			transmit_buffer[line * 16:line * 16 + 16] = glob.line_buffer[0:16]
 
 
+	if effects.active_effect == 'rain':     # Makes the screen "rain away"
+		effects.iterations = 14
+		effects.random_pixels = random.sample(range(16), 16)    # Randomly ordered pixels
+		line = 14 - effects.progress    # We start with the seond line from the bottom
+		for x in effects.random_pixels:
+			color = get_pixel(x, line)      # From led_buffer
+			transmit_buffer[x + (line + 1) * 16] = color
+			transmit_buffer[x + line * 16] = [0x00, 0x00, 0x00]
 
-	# if effects.active_effect == 'down' and effects.progress < 16:
-	# 	for n in range(effects.progress):
-	# 		#transmit_buffer[(15-n) * 16 : ]
-	# 		pass
-	#
-	#
-	# if effects.active_effect == 'up' and effects.progress < 16:
-	# 	for n in range(effects.progress):
-	# 		buffer = buffer[16 * 3:] + bytes([0] * 16 * 3)
+	else: effects.iterations = 0
 
-	#if effects.progress == 32:
-	#	effects.progress = 0    # We're done, making ready for another run/effect
-	#	effects.active_effect = 'none'
-	#else: effects.progress += 1
+	if effects.progress == effects.iterations:
+		effects.progress = 0    # We're done, making ready for another run/effect
+		effects.active_effect = 'none'
+	else: effects.progress += 1
 
 	#
 	# Finally, we convert the whole transmit_buffer list into a string of bytes that we can write to curses/Arduino
@@ -100,6 +104,34 @@ def effects():
 
 	return buffer
 
+
+def convert_buffer():
+	"""
+	Compensates for the display's zigzag pattern of LEDs (if LED active) and returns bytearray()
+	@return: updated RGB led buffer ready to transmit
+	"""
+
+	line_buffer = deepcopy(glob.led_buffer)
+
+	if glob.DISPLAY_MODE == 'LED':
+		# Due to the LEDs on this particular display being in a zigzag pattern, we need to reverse the orientation of
+		# every second line. 1,3,5,7,9,11,13,15 to be precise. But *without* reversing the byte values.
+		# Reversing the zigzag pattern
+		for line in range(1,16,2):  # Every second line from 1 to and including 15
+			for led in range(16 - 1, -1, -1):
+				line_buffer[(line * 16) + (15 - led)] = glob.led_buffer[line * 16 + led]
+
+	# We convert the whole transmit_buffer list into a string of bytes that we can write to curses/Arduino
+	byte_buffer = bytearray()
+
+	for rgb in line_buffer:          # For each led... 256 in total
+		byte_buffer.append(rgb[0])
+		byte_buffer.append(rgb[1])
+		byte_buffer.append(rgb[2])
+
+	return byte_buffer
+
+
 def curses_draw(buffer):
 	"""
 	Draws the 768byte buffer on the console with curses
@@ -111,6 +143,8 @@ def curses_draw(buffer):
 	screen = curses.initscr()
 	curses.start_color()
 	screen.clear()
+
+	# TODO: Apparently 256 colors and ditto color pairs are available. We can convert 3*8bit to 3*2bit possibly
 
 	# Pre-defined color pairs that we will use
 	curses.init_pair(1, curses.COLOR_RED, curses.COLOR_RED)   # Default color pair, the first is ignored
@@ -144,11 +178,8 @@ def curses_draw(buffer):
 	return
 
 
-
-
-
-def init_thread(thread_function, ser):
-	t = threading.Thread(target=thread_function, args = (ser,))
+def init_thread(thread_function, *args):
+	t = threading.Thread(target=thread_function, args = args,)
 	t.daemon = True  # thread dies when main thread (only non-daemon thread) exits.
 	t.start()
 
@@ -176,7 +207,6 @@ def signal_handler(signal, frame):
 	sys.exit(0)
 
 
-
 # noinspection PyShadowingNames,PyShadowingNames
 def draw_screen(ser):
 	try:
@@ -188,11 +218,9 @@ def draw_screen(ser):
 	draw_screen.start = time()
 
 	if glob.DISPLAY_MODE == 'curses':
-		curses_draw(effects())
-	if glob.DISPLAY_MODE == 'tkinter':
-		tk_draw(effects())
-
-
+		curses_draw(convert_buffer())
+	elif glob.DISPLAY_MODE == 'tkinter':
+		tk_draw(convert_buffer())
 	else:		# We default to LED - meaning we normally use this function to update the LED display - tkinter/curses is for debugging mostly
 		if ser.write(b'G') != 1:
 			print("- Go code 'G' failed")
@@ -206,7 +234,8 @@ def draw_screen(ser):
 			print("- Go code NOT acknowledged by Arduino - aborting...")
 			sys.exit()
 
-		ser.write(effects())    # <--- there she goes, notice that even without active effect, we need this to compensate for zigzag LED display
+		ser.write(convert_buffer())    # <--- there she goes, notice that even without active effect, we need this to compensate for zigzag LED display
+
 		if glob.DEBUG:
 			print("Display updates:\033[1m", draw_screen.updates, "\033[0m", end='\r')
 			draw_screen.updates += 1
@@ -343,7 +372,6 @@ def anti_alias_left_10(buffer, original_buffer, current_step):      # TODO: Conv
 		return buffer
 
 
-
 def get_line(x1, y1, x2, y2):
 	"""
 	Bresenham's Line Algorithm
@@ -387,7 +415,7 @@ def get_line(x1, y1, x2, y2):
 	return points
 
 
-def draw_line(x1, y1, x2, y2):
+def put_line(x1, y1, x2, y2):
 	for coordinate in get_line(x1,y1,x2,y2):
 		put_pixel(coordinate[0], coordinate[1], [255,0,0])
 
@@ -400,3 +428,13 @@ def put_pixel(x, y, color):
 	@param color: list [r, g, b]
 	"""
 	glob.led_buffer[x + y * 16] = color
+
+
+def get_pixel(x, y):
+	"""
+	get_pixel reads a single pixel color value from the display_buffer
+	@param x: x coordinate (0-15)
+	@param y: y coordinate (0-15)
+	@param color: list [r, g, b]
+	"""
+	return glob.led_buffer[x + y * 16]
