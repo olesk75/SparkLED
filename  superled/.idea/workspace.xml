@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/SuperLED.py" line="324" />
-  </component>
   <component name="ChangeListManager">
     <list default="true" readonly="true" id="d6f4eb0d-599e-4dec-8d76-5af013d5420a" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Arduino/SuperLED.ino" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/SuperLED.iml" afterPath="$PROJECT_DIR$/.idea/SuperLED.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Arduino/SuperLED/SuperLED.ino" afterPath="$PROJECT_DIR$/Arduino/SuperLED/SuperLED.ino" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SuperLED.py" afterPath="$PROJECT_DIR$/SuperLED.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SuperLED_globals.py" afterPath="$PROJECT_DIR$/SuperLED_globals.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SuperLED_lib.py" afterPath="$PROJECT_DIR$/SuperLED_lib.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
@@ -37,10 +33,8 @@
       <file leaf-file-name="SuperLED.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/SuperLED.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="18" column="0" selection-start="530" selection-end="530" vertical-scroll-proportion="0.65806454" vertical-offset="0" max-vertical-offset="7803">
-              <folding>
-                <element signature="e#362#375#0" expanded="true" />
-              </folding>
+            <state line="428" column="30" selection-start="15674" selection-end="15674" vertical-scroll-proportion="0.5982906" vertical-offset="5628" max-vertical-offset="6342">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -48,7 +42,7 @@
       <file leaf-file-name="SuperLED_lib.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/SuperLED_lib.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="421" column="0" selection-start="14330" selection-end="14330" vertical-scroll-proportion="0.0" vertical-offset="7157" max-vertical-offset="7565">
+            <state line="191" column="0" selection-start="6105" selection-end="6105" vertical-scroll-proportion="0.0" vertical-offset="2508" max-vertical-offset="6230">
               <folding />
             </state>
           </provider>
@@ -57,7 +51,7 @@
       <file leaf-file-name="SuperLED_data.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/SuperLED_data.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="147" column="0" selection-start="17811" selection-end="17811" vertical-scroll-proportion="0.0" vertical-offset="2499" max-vertical-offset="2822">
+            <state line="145" column="0" selection-start="17761" selection-end="17761" vertical-scroll-proportion="0.0" vertical-offset="2030" max-vertical-offset="2324">
               <folding />
             </state>
           </provider>
@@ -66,7 +60,7 @@
       <file leaf-file-name="SuperLED_globals.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/SuperLED_globals.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="8" column="60" selection-start="153" selection-end="153" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="527">
+            <state line="14" column="0" selection-start="232" selection-end="232" vertical-scroll-proportion="0.0" vertical-offset="196" max-vertical-offset="434">
               <folding />
             </state>
           </provider>
@@ -86,16 +80,17 @@
         <option value="$PROJECT_DIR$/kladd" />
         <option value="$PROJECT_DIR$/.idea/workspace.xml" />
         <option value="$PROJECT_DIR$/SuperLED_data.py" />
-        <option value="$PROJECT_DIR$/SuperLED.py" />
         <option value="$PROJECT_DIR$/SuperLED_lib.py" />
         <option value="$PROJECT_DIR$/SuperLED_globals.py" />
+        <option value="$PROJECT_DIR$/Arduino/SuperLED/SuperLED.ino" />
+        <option value="$PROJECT_DIR$/SuperLED.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
     <option name="y" value="22" />
-    <option name="width" value="1440" />
-    <option name="height" value="874" />
+    <option name="width" value="1410" />
+    <option name="height" value="837" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -145,6 +140,7 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -163,16 +159,33 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="SuperLED" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="SuperLED" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Arduino" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="SuperLED" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="full.screen.before.presentation.mode" value="true" />
     <property name="options.splitter.main.proportions" value="0.16986981" />
     <property name="recentsLimit" value="5" />
-    <property name="options.lastSelected" value="vcs.Subversion" />
+    <property name="options.lastSelected" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
     <property name="SearchEverywhereHistory" value="" />
     <property name="last_opened_file_path" value="C:/Program Files (x86)/Subversion/bin/svn.exe" />
     <property name="restartRequiresConfirmation" value="true" />
@@ -190,25 +203,7 @@
     </option>
     <option name="myShowDebugConsoleByDefault" value="true" />
   </component>
-  <component name="RunManager" selected="Python.palette_test">
-    <configuration default="false" name="palette_test" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="/Library/Frameworks/Python.framework/Versions/3.2/bin/python3" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="SuperLED" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/palette_test.py" />
-      <option name="PARAMETERS" value="" />
-      <RunnerSettings RunnerId="PythonRunner" />
-      <ConfigurationWrapper RunnerId="PythonRunner" />
-      <method />
-    </configuration>
+  <component name="RunManager" selected="Python.SuperLED">
     <configuration default="true" type="tests" factoryName="py.test">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -336,7 +331,7 @@
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="/Library/Frameworks/Python.framework/Versions/3.2/bin/python3" />
+      <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
@@ -350,15 +345,9 @@
       <ConfigurationWrapper RunnerId="PythonRunner" />
       <method />
     </configuration>
-    <list size="2">
+    <list size="1">
       <item index="0" class="java.lang.String" itemvalue="Python.SuperLED" />
-      <item index="1" class="java.lang.String" itemvalue="Python.palette_test" />
     </list>
-    <recent_temporary>
-      <list size="1">
-        <item index="0" class="java.lang.String" itemvalue="Python.palette_test" />
-      </list>
-    </recent_temporary>
   </component>
   <component name="ShelveChangesManager" show_recycled="false" />
   <component name="StructureViewFactory">
@@ -379,7 +368,7 @@
     <option name="SHOW_MERGE_SOURCES_IN_ANNOTATE" value="true" />
     <option name="FORCE_UPDATE" value="false" />
     <option name="IGNORE_EXTERNALS" value="false" />
-    <configuration useDefault="true">C:\Users\olesk\AppData\Roaming\Subversion</configuration>
+    <configuration useDefault="true">$USER_HOME$/.subversion</configuration>
     <myIsUseDefaultProxy>false</myIsUseDefaultProxy>
     <supportedVersion>125</supportedVersion>
   </component>
@@ -387,20 +376,20 @@
     <option name="myMappingRoots">
       <list>
         <SvnCopyRootSimple>
-          <option name="myVcsRoot" value="D:\Private Dropbox\CODE\Python\SuperLED" />
-          <option name="myCopyRoot" value="D:\Private Dropbox\CODE\Python\SuperLED" />
+          <option name="myVcsRoot" value="$PROJECT_DIR$" />
+          <option name="myCopyRoot" value="$PROJECT_DIR$" />
         </SvnCopyRootSimple>
         <SvnCopyRootSimple>
-          <option name="myVcsRoot" value="D:\Private Dropbox\CODE\Python\SuperLED\.idea" />
-          <option name="myCopyRoot" value="D:\Private Dropbox\CODE\Python\SuperLED\.idea" />
+          <option name="myVcsRoot" value="$PROJECT_DIR$/.idea" />
+          <option name="myCopyRoot" value="$PROJECT_DIR$/.idea" />
         </SvnCopyRootSimple>
       </list>
     </option>
     <option name="myMoreRealMappingRoots">
       <list>
         <SvnCopyRootSimple>
-          <option name="myVcsRoot" value="D:\Private Dropbox\CODE\Python\SuperLED" />
-          <option name="myCopyRoot" value="D:\Private Dropbox\CODE\Python\SuperLED" />
+          <option name="myVcsRoot" value="$PROJECT_DIR$" />
+          <option name="myCopyRoot" value="$PROJECT_DIR$" />
         </SvnCopyRootSimple>
       </list>
     </option>
@@ -475,7 +464,11 @@
       <created>1392381244036</created>
       <updated>1392381244036</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="Back to serial">
+      <created>1393085401032</created>
+      <updated>1393085401032</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -499,18 +492,18 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="22" width="1440" height="874" extended-state="0" />
+    <frame x="0" y="22" width="1410" height="837" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3243968" sideWeight="0.49964765" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3231623" sideWeight="0.49964765" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.30870712" sideWeight="0.4989429" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32717678" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.11698379" sideWeight="0.68973213" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.12544547" sideWeight="0.70502645" order="1" side_tool="false" content_ui="combo" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25329816" sideWeight="0.49964765" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.115910724" sideWeight="0.68973213" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.12455004" sideWeight="0.70502645" order="1" side_tool="false" content_ui="combo" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2524272" sideWeight="0.49964765" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32956952" sideWeight="0.6309227" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25725594" sideWeight="0.5003524" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2989418" sideWeight="0.49964765" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.29403606" sideWeight="0.49964765" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -518,8 +511,8 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3286445" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.35403726" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.35403726" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
@@ -571,51 +564,31 @@
     <MESSAGE value="Displaying animated GIFs (and still PNGs) now work well." />
     <MESSAGE value="show_img() fixed. Still some issues with certain animated GIFs - PIL issue?" />
     <MESSAGE value="Last version before changing to socket communication from serial" />
-    <option name="LAST_COMMIT_MESSAGE" value="Last version before changing to socket communication from serial" />
+    <MESSAGE value="Back to serial" />
+    <MESSAGE value="Back to serial ok. Arduino code tidied up a lot, and a &quot;boot screen&quot; added in the setup() function to show we're alive." />
+    <option name="LAST_COMMIT_MESSAGE" value="Back to serial ok. Arduino code tidied up a lot, and a &quot;boot screen&quot; added in the setup() function to show we're alive." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" type="python-line">
+        <line-breakpoint type="python-line">
           <url>file://$PROJECT_DIR$/SuperLED_lib.py</url>
-          <line>17</line>
-          <option name="timeStamp" value="72" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="python-line">
-          <url>file://$PROJECT_DIR$/SuperLED_lib.py</url>
-          <line>223</line>
+          <line>404</line>
           <option name="timeStamp" value="81" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="python-line">
-          <url>file://$PROJECT_DIR$/SuperLED_lib.py</url>
-          <line>88</line>
-          <option name="timeStamp" value="83" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="python-line">
-          <url>file://$PROJECT_DIR$/SuperLED_lib.py</url>
-          <line>115</line>
-          <option name="timeStamp" value="84" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="python-line">
-          <url>file://$PROJECT_DIR$/SuperLED_globals.py</url>
-          <line>20</line>
-          <option name="timeStamp" value="85" />
+          <url>file://$PROJECT_DIR$/SuperLED.py</url>
+          <line>433</line>
+          <option name="timeStamp" value="87" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="86" />
+      <option name="time" value="88" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/SuperLED_globals.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="24" column="19" selection-start="599" selection-end="599" vertical-scroll-proportion="0.0" vertical-offset="408" max-vertical-offset="527">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/SuperLED_globals.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="24" column="51" selection-start="682" selection-end="682" vertical-scroll-proportion="0.0" vertical-offset="480" max-vertical-offset="600">
@@ -647,9 +620,7 @@
     <entry file="file://$PROJECT_DIR$/SuperLED.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="376" column="67" selection-start="11062" selection-end="11062" vertical-scroll-proportion="0.0" vertical-offset="7340" max-vertical-offset="7500">
-          <folding>
-            <element signature="e#362#375#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -670,9 +641,7 @@
     <entry file="file://$PROJECT_DIR$/SuperLED.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="429" column="42" selection-start="12426" selection-end="12426" vertical-scroll-proportion="0.0" vertical-offset="135" max-vertical-offset="6570">
-          <folding>
-            <element signature="e#362#375#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -693,9 +662,7 @@
     <entry file="file://$PROJECT_DIR$/SuperLED.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="381" column="0" selection-start="11262" selection-end="11262" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="4875">
-          <folding>
-            <element signature="e#362#375#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -716,9 +683,7 @@
     <entry file="file://$PROJECT_DIR$/SuperLED.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="14" column="13" selection-start="560" selection-end="560" vertical-scroll-proportion="0.0" vertical-offset="210" max-vertical-offset="6135">
-          <folding>
-            <element signature="e#362#375#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -739,9 +704,7 @@
     <entry file="file://$PROJECT_DIR$/SuperLED.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="11" column="3" selection-start="502" selection-end="502" vertical-scroll-proportion="0.0" vertical-offset="165" max-vertical-offset="6180">
-          <folding>
-            <element signature="e#362#375#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -762,9 +725,7 @@
     <entry file="file://$PROJECT_DIR$/SuperLED.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="351" column="0" selection-start="10672" selection-end="10672" vertical-scroll-proportion="0.0" vertical-offset="5265" max-vertical-offset="5835">
-          <folding>
-            <element signature="e#362#375#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -785,9 +746,7 @@
     <entry file="file://$PROJECT_DIR$/SuperLED.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="391" column="0" selection-start="11870" selection-end="11870" vertical-scroll-proportion="0.0" vertical-offset="7780" max-vertical-offset="7780">
-          <folding>
-            <element signature="e#362#375#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -808,9 +767,7 @@
     <entry file="file://$PROJECT_DIR$/SuperLED.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="391" column="0" selection-start="11870" selection-end="11870" vertical-scroll-proportion="0.0" vertical-offset="7660" max-vertical-offset="7780">
-          <folding>
-            <element signature="e#362#375#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -831,9 +788,7 @@
     <entry file="file://$PROJECT_DIR$/SuperLED.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="391" column="0" selection-start="11870" selection-end="11870" vertical-scroll-proportion="0.0" vertical-offset="7780" max-vertical-offset="7780">
-          <folding>
-            <element signature="e#362#375#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -859,9 +814,7 @@
     <entry file="file://$PROJECT_DIR$/SuperLED.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="92" column="0" selection-start="2657" selection-end="2657" vertical-scroll-proportion="0.0" vertical-offset="1473" max-vertical-offset="2431">
-          <folding>
-            <element signature="e#362#375#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -873,9 +826,7 @@
     <entry file="file://$PROJECT_DIR$/SuperLED.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="80" column="120" selection-start="2344" selection-end="2344" vertical-scroll-proportion="0.0" vertical-offset="799" max-vertical-offset="1904">
-          <folding>
-            <element signature="e#362#375#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -887,9 +838,7 @@
     <entry file="file://$PROJECT_DIR$/SuperLED.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="80" column="120" selection-start="2344" selection-end="2344" vertical-scroll-proportion="0.0" vertical-offset="1326" max-vertical-offset="1904">
-          <folding>
-            <element signature="e#362#375#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -901,9 +850,7 @@
     <entry file="file://$PROJECT_DIR$/SuperLED.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="117" column="83" selection-start="3260" selection-end="3260" vertical-scroll-proportion="0.0" vertical-offset="1904" max-vertical-offset="1904">
-          <folding>
-            <element signature="e#362#375#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -922,11 +869,6 @@
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-19.32258" vertical-offset="8985" max-vertical-offset="9555" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Arduino/superled.ino">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="76" column="15" selection-start="2238" selection-end="2238" vertical-scroll-proportion="0.0" vertical-offset="719" max-vertical-offset="1470" />
-      </provider>
-    </entry>
     <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevconsole.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="381" column="0" selection-start="10211" selection-end="10211" vertical-scroll-proportion="0.33208254" vertical-offset="5433" max-vertical-offset="6255" />
@@ -939,38 +881,44 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/SuperLED_data.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="147" column="0" selection-start="17811" selection-end="17811" vertical-scroll-proportion="0.0" vertical-offset="2940" max-vertical-offset="3320">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/SuperLED_lib.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="421" column="0" selection-start="14330" selection-end="14330" vertical-scroll-proportion="0.0" vertical-offset="4745" max-vertical-offset="6118">
+        <state line="145" column="0" selection-start="17761" selection-end="17761" vertical-scroll-proportion="0.0" vertical-offset="2900" max-vertical-offset="3320">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/.idea/misc.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="478">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="478" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Arduino/SuperLED/SuperLED.ino">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="287" column="0" selection-start="8843" selection-end="8843" vertical-scroll-proportion="0.31652892" vertical-offset="5357" max-vertical-offset="11000" />
+      </provider>
+    </entry>
+    <entry file="file:///Library/Frameworks/Python.framework/Versions/3.3/lib/python3.3/site-packages/serial/serialposix.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="465" column="0" selection-start="16856" selection-end="16856" vertical-scroll-proportion="0.2778865" vertical-offset="6354" max-vertical-offset="9912" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/SuperLED_lib.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="191" column="0" selection-start="6105" selection-end="6105" vertical-scroll-proportion="0.0" vertical-offset="2508" max-vertical-offset="6230">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/SuperLED_globals.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="60" selection-start="153" selection-end="153" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="527">
+        <state line="14" column="0" selection-start="232" selection-end="232" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="434">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/SuperLED.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="18" column="0" selection-start="530" selection-end="530" vertical-scroll-proportion="0.65806454" vertical-offset="0" max-vertical-offset="7803">
-          <folding>
-            <element signature="e#362#375#0" expanded="true" />
-          </folding>
+        <state line="428" column="30" selection-start="15674" selection-end="15674" vertical-scroll-proportion="0.5982906" vertical-offset="5628" max-vertical-offset="6342">
+          <folding />
         </state>
       </provider>
     </entry>

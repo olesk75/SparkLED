@@ -1,298 +1,175 @@
 /*
 	This program has a simple mission: display anything sent to it over the serial line on a 16x16 RGB led display
 	Note that the rows zigzag, going from left to right, right to left, left to right etc.
-	
+
 */
-#include <WiFi.h>
-#include <FastLED.h>
-#define NUM_LEDS 256	// yeah, we got a LOT
-#define LED_LINE 48		// bytes per line (we read line by line)
-#define COLOR_BYTES 3	// 3 bytes required per led for full color
-#define BUFFER_SIZE 786	// NUM_LED * COLOR_BYTES
-#define DATA_PIN 6		// remember to verify!
-#define ledPin 13		// on-board LED for Arduino UNO
+#include <FastLED.h>		// The main library to help us control the LEDs - much faster than Adafruit's
+#define NUM_LEDS 256		// Total number of LEDs
+#define COLOR_BYTES 3		// 3 bytes required per led for full color
+#define DATA_PIN 6			// Pin on the Arduino used to communicate with LED display
+#define ledPin 13			// On-board LED for Arduino UNO - used for debugging mostly - not required
 
-// We no longer use serial for communication with client, only for error reporting
-//#define	BAUD_RATE 400000	// We should be able to do 500'000 over USB serial link with Raspberry PI
-#define BAUD_RATE 115200
-#define PORT 2208
- 
- 
-CRGB leds[NUM_LEDS];			// the 256 led (786B) array, we write to this from the serial port. NOTE: 3 bytes per index
+#define BAUD_RATE 400000	// Trial and error maximum
 
-char ssid[] = "ShadowNETz";		//  your network SSID (name) 
-char pass[] = "LoveSHADOWNET";			// your network password
-int status = WL_IDLE_STATUS;	// the WiFi radio's status
+CRGB leds[NUM_LEDS];		// FastLED class with .r .g and .b for each pixel - size: 3 bytes * NUM_LEDS
+char command;				// the command character we get from serial/WiFi		
 
-WiFiServer server(PORT);		// server port number
-
-bool alreadyConnected = false;
-char command;
-byte readByte;
-String stringOne;
-unsigned long time;
 
 void setup() { 
 	FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);	// setting up pin 6 and the array 'leds' to work with FastLED library
 	
-	Serial.begin(BAUD_RATE);	// Initializing serial communication
+	boot_screen();					// Showing boot screen to test connection
 	
-	/* DISABLED - we now only user serial for debugging, and leave LED updates to WiFi	
-	Serial.write('S');
-	while (Serial.read() != 'G') {}	// Waiting for "G" to continue
-	Serial.write('A');		// "G" received - ack'ing
-	*/
-
-	LEDS.setBrightness(255);	// maximum brightness
-
-	Serial.println(F("- I LIVE AGAIN!"));
-	Serial.print(F("Connecting to WiFi network..."));
-	  // check for the presence of the shield:
-	if (WiFi.status() == WL_NO_SHIELD) {
-		Serial.println(F("ERROR: WiFi shield not present")); 
-		// don't continue:
-		while(true);
-	} 
+	Serial.begin(BAUD_RATE);		// Initializing serial communication
 	
-	status = WiFi.begin(ssid, pass);
-
-  	// if you're not connected, stop here:
-  	if ( status != WL_CONNECTED) { 
-    		Serial.println(F("failed!!!"));
-    		while(true);		// Hanging here forever and ever and ever ...
-	} 
-	// if you are connected, print out info about the connection:
-	else {
-		server.begin();
-    		Serial.print(F("done!. My address:"));
-    		IPAddress myAddress = WiFi.localIP();
-    		Serial.println(myAddress);
-
-	}
-	
-	
-
-	// We need a server that clients can connect to 
+	Serial.write('S');				// Writing 'S' to indicate start of communications
+	while (Serial.read() != 'G') {}	// Waiting for 'G' to continue
+	LEDS.setBrightness(128);	
+	Serial.write('A');				// Acknowledging with 'A'
 	
 }
 
-// Main loop, where we get our values form serial and display it
 void loop() { 
-	// wait for a new client:
-  WiFiClient client = server.available();	// listen for incoming clients
+	char command = Serial.read();	// Each iteration we check for a command
 
-	if (client) {
-		Serial.println(F("We have a new client"));
-		client.write('S'); 	// Sending single byte ('S') to indicate start of communications
-		//time = millis();	// Starting timer
+	switch (command) {
+	
+		case 'G':	// 'G' means we are receiving a full screen buffer to display
+			{		  
+			Serial.write('A');	// GO code received - acknowledging
+			int read_bytes = Serial.readBytes( (char*)leds, NUM_LEDS * COLOR_BYTES);	// Full screen read
 		
-		
-		while (client.connected()) {	// loop while the client's connected
-			Serial.println(F("Spinning around the connected loop"));
-			//if (millis() > time + 10000) break;	// we reset the connection if 10 seconds idle
-			if (client.available()) {
-				command = client.read();	// reads single byte from client
-				//time = millis();	// we reset the timer as we have activity
-				Serial.println(F("Command received: "));
-				Serial.println(command);
-	  
-				switch (command) {
-					case 'G':	// 'G' means we are receiving a full screen buffer
-						{		  
-						client.write('A');	// GO code received - acknowledging
-						Serial.println(F("- Command G received (full screen update), sending A back to client"));
-						while(!client.available()) {}	// we need to wait for data available to read, or will get -1
-						
-						client.read((byte *)leds[0], NUM_LEDS * COLOR_BYTES);
-						/*
-							for (int pixel = 0; pixel < NUM_LEDS / 4; pixel++)
-								{
-									leds[pixel].r = client.read();
-									leds[pixel].g = client.read();
-									leds[pixel].b = client.read();
-								}
-							delay(10);
-							for (int pixel = 0; pixel < NUM_LEDS / 4; pixel++)
-								{
-									leds[pixel + 64].r = client.read();
-									leds[pixel + 64].g = client.read();
-									leds[pixel + 64].b = client.read();
-								}
-							delay(10);
-							for (int pixel = 0; pixel < NUM_LEDS / 4; pixel++)
-								{
-									leds[pixel + 128].r = client.read();
-									leds[pixel + 128].g = client.read();
-									leds[pixel + 128].b = client.read();
-								}
-							delay(10);
-							for (int pixel = 0; pixel < NUM_LEDS / 4; pixel++)
-								{
-									leds[pixel + 192].r = client.read();
-									leds[pixel + 192].g = client.read();
-									leds[pixel + 192].b = client.read();
-								}
-							delay(10);
-						/*	
-						time = millis();	// we reset the timer as we have activity
-						CRGB *ptr;
-    					ptr = &leds[0];       /* point our pointer at the first
-                                 integer in our array 
-						
-						
-						client.read((CRGB *)ptr, NUM_LEDS);	// undocumented Arduino socket read to get all 768 bytes in one go
-						ptr = &leds[256];
-						client.read(*ptr, NUM_LEDS);
-						ptr = &leds[512];
-						client.read(*ptr, NUM_LEDS);
-						
-						Serial.print("Read 768 bytes from socket in");
-						Serial.print(millis() - time);
-						Serial.println("ms");
-						*/
-						//int read_bytes = Serial.readBytes( (char*)leds, NUM_LEDS * COLOR_BYTES);	// Full screen read
-						client.write('R');			// Sending Received
-						Serial.println(F("- Screen update OK"));
-						FastLED.show();
-						}	  
-						break;
-					case 'B':	// 'B' means we are receiving a new brightness value
-						{
-						client.write('A');	// Command code received - acknowledging
-						Serial.println(F("- Command B received (set brightness), sending A back to client"));
-						while(!client.available()) {}
-						readByte = client.read();
-			
-						int brightness = int(readByte);
-												
-						if (brightness > 0 && brightness < 256) {
-							client.write('A');					// Brightness value received OK
-							LEDS.setBrightness(brightness);
-							FastLED.show();
-							client.write('D');					// effect done
-							Serial.println(F("Effect done - sending D back to client"));
-							
-						} 	else { 	// sending Error
-							server.write('E'); 
-							Serial.println(F("Effect ERROR - sending E back to client"));
-							}
-						break;
-						}
-					case 'T':	// 'T' means we are doing local tests of the pixels
-						{
-						client.write('A');	// Command code received - acknowledging
-						Serial.println(F("Command T received (local test), sending A back to client"));
-						//test_pixelrun();
-						rainbow();
-						client.write('D');					// effect done	
-						Serial.println(F("Effect done - sending D back to client"));
-						break;
-						}
-					case 'Z':	// 'Z' means we are zeroing the LEDs (blanking the display)
-						{
-						client.write('A');	// Command code received - acknowledging
-						Serial.println(F("Command Z received (zero display), sending A back to client"));
-						memset(leds, 0,  NUM_LEDS * sizeof(struct CRGB));
-						FastLED.show();
-						client.write('D');					// effect done
-						Serial.println(F("Effect done - sending D back to client"));
-						break;
-						}
-					case 'N':	// 'N' is a simple keepalive - no action required
-						{
-						// Update timer later
-						}
-					default: // no command code received - loop() repeats itself
-					break;
+			if (read_bytes != NUM_LEDS * COLOR_BYTES) {	// We didn't get right number of bytes
+				Serial.write('E');						// Sending Error
+			} else {
+				Serial.write('R');						// Sending Received
+				FastLED.show();							// Showing new LED values
 				}
+			}	  
+			break;
+		case 'B':	// 'B' means we are receiving a new brightness value
+			{
+			Serial.write('A');	// Command code received - acknowledging
+			while (Serial.available() == 0) { }
+			int bright = Serial.read();
+			if (bright > 0 && bright < 256) {
+				Serial.write('A');						// Brightness value received OK
+				LEDS.setBrightness(bright);
+				FastLED.show();							// Showing new LED values
+				Serial.write('D');						// Confirming effect Done
+				
+			} 	else { Serial.write('E'); }				// Sending Error
+			break;
 			}
-		}
-		// close the connection:
-		client.stop();
-		Serial.println(F("Client disconnected"));
+		case 'T':	// 'T' means we are doing local tests of the pixels
+			{
+			Serial.write('A');	// Command code received - acknowledging
+			//test_pixelrun();
+			rainbow();
+			Serial.write('D');							// Confirming effect Done
+			break;
+			}
+		case 'Z':	// 'Z' means we are zeroing the LEDs (blanking the display)
+			{
+			Serial.write('A');	// Command code received - acknowledging
+			memset(leds, 0,  NUM_LEDS * sizeof(struct CRGB));
+			FastLED.show();
+			Serial.write('D');							// Confirming effect Done
+			break;
+			}
+		//default: // if nothing else matches, do this (for later)
 	}
 }
 
-
-
+/*
+	Fades all the pixels to zero, step by step
+*/
 void fader() {
 	int brightness = LEDS.getBrightness();
-	
+
 	for (int fade = 0; brightness - fade > 0; fade+=2) {
 		LEDS.setBrightness(brightness - fade);
+		delay(10);
 		FastLED.show();
-		
+
 	}
 }
 
-void test_pixelrun() { 
+/*
+	Sends a pixel "running" down the display
+*/
+void test_pixelrun() {
 
-	for(int dot = 0; dot < NUM_LEDS; dot++) { 
+	for(int dot = 0; dot < NUM_LEDS; dot++) {
 		leds[dot] = CRGB::Blue;
 		FastLED.show();
 		leds[dot] = CRGB::Black;
 	}
+	FastLED.show();		// Showing the last pixel before returning
 
-	FastLED.show();
-      
 }
 
+/*
+	Shows a rainbow pattern
+*/
 void rainbow() {
 	byte red = 0;
 	byte green = 0;
 	byte blue = 0;
-	
+
 	CRGB led_row[16];
+
+	fill_rainbow( &(leds[0]), NUM_LEDS /*led count*/, 0 /*starting hue*/);
+	LEDS.setBrightness(255);
+	FastLED.show();
 	
-	 fill_rainbow( &(leds[0]), 256 /*led count*/, 0 /*starting hue*/);
-	 
-	 FastLED.show();
-	 
-	/*
-	// Copy ten led colors from leds[src .. src+9] to leds[dest .. dest+9]
-  	//memmove( &leds[dest], &leds[src], 10 * sizeof( CRGB) )
-  	for (int row = 0; row < 16; row++) { 
-				if (row > 10) red = 0;
-				if (row > 5) red = 255 - (row * 32);
-				if (row <= 5) red = 96 + (row * 32);
-								
-				//green = 128 - row * 32;
-				//blue = row * 32;
-		
-			for (int col = 0; col < 16; col++) {
-				leds[row * 16 + col].setRGB(red, green, blue);
-			}
-		FastLED.show();
-	}
-	*/
-	for (int iterations = 0; iterations < 32; iterations++)  {	
-		memmove( &led_row[0], &leds[0], 16 * sizeof( CRGB) );	
+	for (int iterations = 0; iterations < 32; iterations++)  {
+		memmove( &led_row[0], &leds[0], 16 * sizeof( CRGB) );
 		memmove( &leds[0], &leds[16], (255 - 16) * sizeof( CRGB) );
 		memmove( &leds[256 - 16], &led_row[0], 16 * sizeof( CRGB) );
 		LEDS.setBrightness(256 - ((iterations + 1) * 8));
 		FastLED.show();
-		delay(100);	
+		delay(50);
 	}
-	for (int n = 0; n < 256; n++) leds[n] = 0x000000;
+	for (int n = 0; n < NUM_LEDS; n++) leds[n] = 0x000000;
 	FastLED.show();
-	LEDS.setBrightness(255);
-	
-	
+
 }
 
-void printWifiStatus() {
-	// print the SSID of the network you're attached to:
-	Serial.print(F("SSID: "));
-	Serial.println(WiFi.SSID());
+/*
+	Boot screen - shows a sweeping line from left to right
+*/
+void boot_screen() {
+	int real_x;
+	int multiplier;
+	char stripes = sqrt(NUM_LEDS);		// Finding number of rows/columns - NOTE: *assuming* square display
+	LEDS.setBrightness(255);		// Maximum brightness by default
+	
+	for (int x = 0; x < stripes + 5; x++) {
+		for (int y = 0; y < stripes; y++) {
+			real_x = x;
+			multiplier = 1;
+			if (y % 2) {
+				real_x = stripes - 1 - x;	// we reverse every second line 
+				multiplier = -1;
+				}
+				
+			if (real_x < stripes && real_x >= 0) leds[y * stripes + real_x] = CRGB(255,255,255);							// main line
+			if (real_x - 1 * multiplier < stripes && real_x - 1 * multiplier >= 0) leds[(real_x - 1 * multiplier) + stripes * y] = CRGB(192,192,192);	// second line
+			if (real_x - 2 * multiplier < stripes && real_x - 2 * multiplier >= 0) leds[(real_x - 2 * multiplier) + stripes * y] = CRGB(64,64,64);		// third line
+			if (real_x - 3 * multiplier < stripes && real_x - 3 * multiplier >= 0) leds[(real_x - 3 * multiplier) + stripes * y] = CRGB(32,32,32);		// fourth line
+			if (real_x - 4 * multiplier < stripes && real_x - 4 * multiplier >= 0) leds[(real_x - 4 * multiplier) + stripes * y] = CRGB(16,16,16);		// fifth line
+			if (real_x - 5 * multiplier < stripes && real_x - 5 * multiplier >= 0) leds[(real_x - 5 * multiplier) + stripes * y] = CRGB(0,0,0);			// sixth line
+		}
+		FastLED.show();
+		delay(20);
+	}
+	
+}
+			
+void fill_screen(CRGB color) {
 
-	// print your WiFi shield's IP address:
-	IPAddress ip = WiFi.localIP();
-	Serial.print(F("IP Address: "));
-	Serial.println(ip);
-
-	// print the received signal strength:
-	long rssi = WiFi.RSSI();
-	Serial.print(F("signal strength (RSSI):"));
-	Serial.print(rssi);
-	Serial.println(F(" dBm"));
+	for (int n = 0; n < NUM_LEDS; n++)
+		leds[n] = color;
+	FastLED.show();
 }

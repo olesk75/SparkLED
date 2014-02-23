@@ -22,7 +22,7 @@ baud_rate = 400000                  # We get about 1B per 10baud, so with 500'00
 # Global variable definitions
 glob.NUM_LEDS = 256
 glob.DEBUG = 1       # Increase verbosity
-glob.DISPLAY_MODE = 'curses'		# Valid options: 'LED', 'curses', 'tkinter'
+glob.DISPLAY_MODE = 'LED'		# Valid options: 'LED', 'curses', 'tkinter'
 
 
 def initialize(serial_port, baud_rate):
@@ -422,17 +422,17 @@ if __name__ == "__main__":  # Making sure we don't have problems if importing fr
 
 	#while True: print("I am free")
 	#clock_digital([128,0,0])
-	#blank(ser)
+	blank(ser)
 
-	effects.active_effect = 'rain'
+	#effects.active_effect = 'rain'
 
-	#show_img('images/bell.png', 30, False)
+	show_img('images/bell.png')
 	# while True:	show_img('images/fractal.gif')      # "Cheat" to show colorful fractal using animated gif
 	#while True: show_img('images/ikanim.gif')
 
+	#show_img('images/cp6_animations.gif')
 	sleep(2)
-	while True:
-		show_img('images/fish.gif')
+	ext_effect(ser,'hw_test')
 	sleep(2)
 	show_img('images/spinner2.gif')
 	sleep(2)
