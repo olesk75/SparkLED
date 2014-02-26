@@ -1,37 +1,61 @@
 /*
-	This program has a simple mission: display anything sent to it over the serial line on a 16x16 RGB led display
-	Note that the rows zigzag, going from left to right, right to left, left to right etc.
+	This program has a simple mission: display anything sent to it over SPI on a 16x16 RGB led display
+	The Arduino is SPI slave
 
 */
 #include <FastLED.h>		// The main library to help us control the LEDs - much faster than Adafruit's
+#include <SPI.h>			// To communicate with Arduino_Serial
+#include "pins_arduino.h"	// Mostly just for readability
 #define NUM_LEDS 256		// Total number of LEDs
 #define COLOR_BYTES 3		// 3 bytes required per led for full color
 #define DATA_PIN 6			// Pin on the Arduino used to communicate with LED display
 #define ledPin 13			// On-board LED for Arduino UNO - used for debugging mostly - not required
 
-#define BAUD_RATE 400000	// Trial and error maximum
+#define BAUD_RATE 115200	// For logging
 
 CRGB leds[NUM_LEDS];		// FastLED class with .r .g and .b for each pixel - size: 3 bytes * NUM_LEDS
 char command;				// the command character we get from serial/WiFi		
 
+/*
+char buf [100];				// SPI receive buffer
+volatile byte pos;			// position in buffer
+*/
+volatile boolean process_it;// flag to handle incoming data from SPI 
 
-void setup() { 
+
+void setup() {
+	// have to send on master in, *slave out*
+	pinMode(MISO, OUTPUT);
+
+	// turn on SPI in slave mode
+	SPCR |= _BV(SPE);
+
+	// get ready for an interrupt 
+	//pos = 0;   // buffer empty
+	process_it = false;
+
+	// now turn on interrupts
+	SPI.attachInterrupt();
 	FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);	// setting up pin 6 and the array 'leds' to work with FastLED library
-	
 	boot_screen();					// Showing boot screen to test connection
 	
 	Serial.begin(BAUD_RATE);		// Initializing serial communication
-	
-	Serial.write('S');				// Writing 'S' to indicate start of communications
-	while (Serial.read() != 'G') {}	// Waiting for 'G' to continue
+	Serial.println(F("- SERIAL (SPI SLAVE) ARDUINO LIVE AGAIN!"));
+
 	LEDS.setBrightness(128);	
-	Serial.write('A');				// Acknowledging with 'A'
-	
 }
 
 void loop() { 
-	char command = Serial.read();	// Each iteration we check for a command
-
+	if (process_it)
+    	{
+    	Serial.print(F("I got: ")); Serial.println(command);
+    	/*
+		buf [pos] = 0;  
+		Serial.println (buf);
+		pos = 0;
+		process_it = false;*/
+		} 
+		/*
 	switch (command) {
 	
 		case 'G':	// 'G' means we are receiving a full screen buffer to display
@@ -78,14 +102,31 @@ void loop() {
 			break;
 			}
 		//default: // if nothing else matches, do this (for later)
-	}
+	}*/
 }
 
 /*
-	Fades all the pixels to zero, step by step
+	SPI interrupt routine
+*/
+ISR (SPI_STC_vect)
+{
+command = SPDR;  // grab byte from SPI Data Register
+ /* 
+	// add to buffer if room
+	if (pos < sizeof buf) {
+		buf [pos++] = c;
+
+		// example: newline means time to process buffer
+		if (pos > 75)	// NOTE: Not sure if we need this....
+		process_it = true;
+  
+	}  // end of room available*/
+}  // end of interrupt routine SPI_STC_vect
+/*
+Fades all the pixels to zero, step by step
 */
 void fader() {
-	int brightness = LEDS.getBrightness();
+int brightness = LEDS.getBrightness();
 
 	for (int fade = 0; brightness - fade > 0; fade+=2) {
 		LEDS.setBrightness(brightness - fade);

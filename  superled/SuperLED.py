@@ -14,7 +14,6 @@ import signal
 from datetime import datetime
 import socket
 from time import sleep
-
 from SuperLED_lib import *
 import SuperLED_data
 
