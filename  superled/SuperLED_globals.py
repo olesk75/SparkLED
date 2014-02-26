@@ -1,15 +1,18 @@
-__author__ = 'olesk'
+""" This file contains global variables used in the SuperLED project
+	The objective is to shrink this file as much as possible and use
+	function arguments in stead wherever possible.
+"""
 
 # Global variables
-transmit_flag = None
+transmit_flag = False
 abort_flag = None
-
-ser = None
 
 DISPLAY_MODE = 'LED'  # One of 'curses', 'LED' or 'tkinter' - defaults to 'LED'
 OFFLINE = None
 DEBUG = False
 NUM_LEDS = None
+
+Arduino = ''    # The socket object that holds the connection to the Arduino
 
 settings = {
 	'OFFLINE': False,

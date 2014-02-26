@@ -2,12 +2,38 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" readonly="true" id="d6f4eb0d-599e-4dec-8d76-5af013d5420a" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Arduino/SuperLED.ino" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/SuperLED.iml" afterPath="$PROJECT_DIR$/.idea/SuperLED.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Arduino/SuperLED/SuperLED.ino" afterPath="$PROJECT_DIR$/Arduino/SuperLED/SuperLED.ino" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Arduino_Serial" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Arduino_WiFI" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/dictionaries" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/scopes" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/.name" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Arduino_WiFI/Arduino_WiFi.ino" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/SuperLED.iml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/codeStyleSettings.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/dictionaries/olesk.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/scopes/scope_settings.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea" afterPath="$PROJECT_DIR$/.idea" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SuperLED.py" afterPath="$PROJECT_DIR$/SuperLED.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SuperLED_data.py" afterPath="$PROJECT_DIR$/SuperLED_data.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SuperLED_globals.py" afterPath="$PROJECT_DIR$/SuperLED_globals.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SuperLED_lib.py" afterPath="$PROJECT_DIR$/SuperLED_lib.py" />
+      <change type="MOVED" beforePath="E:\Dropbox folders\Private\CODE\Python\SuperLED\Arduino\SuperLED\SuperLED.ino" afterPath="$PROJECT_DIR$/Arduino_Serial/Arduino_Serial.ino" />
+    </list>
+    <list id="5b3cef34-5ba3-4305-9e07-17117300ebbf" name="Failed commit: Default" comment="Major change of architecture.&#10;&#10;WiFi + FastLED library on same Arduino consumes too much RAM, which crashes&#10;&#10;Only solution is to split the work. Will now use two Arduinos. They will communicate over SPI.&#10;&#10;-&gt; Arduino_Serial will connect to LED matrix and send all the data it receives via SPI from Arduino_WiFi&#10;-&gt; Arduino_WiFi will handle wireless connection to Python and pass on all data to Arduino_Serial over SPI.&#10;-&gt; Python code will interface only with Arduino_WiFi &#10;&#10;HW list:&#10;- 2 x Arduinos&#10;- 1 x WiFi (CC3000) Arduino Shield&#10;- 1 x PC with Python&#10;&#10;" />
+    <list id="219a42f4-6bee-4669-adc4-db9d9e925c60" name="Failed commit: Default (2)" comment="Major change of architecture.&#10;&#10;WiFi + FastLED library on same Arduino consumes too much RAM, which crashes&#10;&#10;Only solution is to split the work. Will now use two Arduinos. They will communicate over SPI.&#10;&#10;-&gt; Arduino_Serial will connect to LED matrix and send all the data it receives via SPI from Arduino_WiFi&#10;-&gt; Arduino_WiFi will handle wireless connection to Python and pass on all data to Arduino_Serial over SPI.&#10;-&gt; Python code will interface only with Arduino_WiFi &#10;&#10;HW list:&#10;- 2 x Arduinos&#10;- 1 x WiFi (CC3000) Arduino Shield&#10;- 1 x PC with Python&#10;&#10;" />
+    <list id="cf6095c7-664b-43e5-a5f0-c157f077bc1a" name="Failed commit: Default (3)" comment="Major change of architecture.&#10;&#10;WiFi + FastLED library on same Arduino consumes too much RAM, which crashes&#10;&#10;Only solution is to split the work. Will now use two Arduinos. They will communicate over SPI.&#10;&#10;-&gt; Arduino_Serial will connect to LED matrix and send all the data it receives via SPI from Arduino_WiFi&#10;-&gt; Arduino_WiFi will handle wireless connection to Python and pass on all data to Arduino_Serial over SPI.&#10;-&gt; Python code will interface only with Arduino_WiFi &#10;&#10;HW list:&#10;- 2 x Arduinos&#10;- 1 x WiFi (CC3000) Arduino Shield&#10;- 1 x PC with Python&#10;&#10;" />
+    <list id="cdde8f6f-3906-4a3c-8c1d-06ed65cbea0c" name="Removed by OJ" comment="">
+      <change type="DELETED" beforePath="E:\Dropbox folders\Private\CODE\Python\SuperLED\kladd" afterPath="" />
+      <change type="DELETED" beforePath="E:\Dropbox folders\Private\CODE\Python\SuperLED\Arduino" afterPath="" />
+      <change type="DELETED" beforePath="E:\Dropbox folders\Private\CODE\Python\SuperLED\Arduino\SuperLED" afterPath="" />
     </list>
     <ignored path="SuperLED.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -30,10 +56,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="SuperLED.py" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="SuperLED.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/SuperLED.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="428" column="30" selection-start="15674" selection-end="15674" vertical-scroll-proportion="0.5982906" vertical-offset="5628" max-vertical-offset="6342">
+            <state line="17" column="19" selection-start="809" selection-end="809" vertical-scroll-proportion="0.0" vertical-offset="340" max-vertical-offset="6920">
               <folding />
             </state>
           </provider>
@@ -42,16 +68,30 @@
       <file leaf-file-name="SuperLED_lib.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/SuperLED_lib.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="191" column="0" selection-start="6105" selection-end="6105" vertical-scroll-proportion="0.0" vertical-offset="2508" max-vertical-offset="6230">
-              <folding />
+            <state line="532" column="0" selection-start="18426" selection-end="18426" vertical-scroll-proportion="0.0" vertical-offset="10580" max-vertical-offset="10580">
+              <folding>
+                <marker date="1393411624521" expanded="false" signature="343:555" placeholder="import ..." />
+                <marker date="1393411624521" expanded="true" signature="620:3352" placeholder="..." />
+                <marker date="1393411624521" expanded="true" signature="698:1172" placeholder="&quot;&quot;&quot;...&quot;&quot;&quot;" />
+                <marker date="1393411624521" expanded="true" signature="6240:7411" placeholder="..." />
+                <marker date="1393411624521" expanded="true" signature="7428:9279" placeholder="..." />
+                <marker date="1393411624521" expanded="true" signature="11672:11878" placeholder="..." />
+                <marker date="1393411624521" expanded="true" signature="11921:12073" placeholder="..." />
+                <marker date="1393411624521" expanded="true" signature="12137:12585" placeholder="..." />
+                <marker date="1393411624521" expanded="true" signature="12139:12406" placeholder="&quot;&quot;&quot;Alpha composite an RGBA Image with a specified color....&quot;&quot;&quot;" />
+                <marker date="1393411624521" expanded="true" signature="12617:12712" placeholder="..." />
+                <marker date="1393411624521" expanded="true" signature="12742:12939" placeholder="..." />
+                <marker date="1393411624521" expanded="true" signature="12995:13634" placeholder="..." />
+                <marker date="1393411624521" expanded="true" signature="14448:14684" placeholder="..." />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="SuperLED_data.py" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="SuperLED_data.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/SuperLED_data.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="145" column="0" selection-start="17761" selection-end="17761" vertical-scroll-proportion="0.0" vertical-offset="2030" max-vertical-offset="2324">
+            <state line="5" column="32" selection-start="211" selection-end="211" vertical-scroll-proportion="0.0" vertical-offset="100" max-vertical-offset="3360">
               <folding />
             </state>
           </provider>
@@ -60,7 +100,7 @@
       <file leaf-file-name="SuperLED_globals.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/SuperLED_globals.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="14" column="0" selection-start="232" selection-end="232" vertical-scroll-proportion="0.0" vertical-offset="196" max-vertical-offset="434">
+            <state line="29" column="0" selection-start="867" selection-end="867" vertical-scroll-proportion="0.0" vertical-offset="580" max-vertical-offset="700">
               <folding />
             </state>
           </provider>
@@ -79,18 +119,19 @@
         <option value="$PROJECT_DIR$/test" />
         <option value="$PROJECT_DIR$/kladd" />
         <option value="$PROJECT_DIR$/.idea/workspace.xml" />
-        <option value="$PROJECT_DIR$/SuperLED_data.py" />
-        <option value="$PROJECT_DIR$/SuperLED_lib.py" />
-        <option value="$PROJECT_DIR$/SuperLED_globals.py" />
         <option value="$PROJECT_DIR$/Arduino/SuperLED/SuperLED.ino" />
         <option value="$PROJECT_DIR$/SuperLED.py" />
+        <option value="$PROJECT_DIR$/SuperLED_globals.py" />
+        <option value="$PROJECT_DIR$/SuperLED_lib.py" />
+        <option value="$PROJECT_DIR$/SuperLED_data.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="y" value="22" />
-    <option name="width" value="1410" />
-    <option name="height" value="837" />
+    <option name="x" value="-8" />
+    <option name="y" value="-8" />
+    <option name="width" value="2576" />
+    <option name="height" value="1416" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -149,34 +190,6 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="SuperLED" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="SuperLED" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="SuperLED" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="SuperLED" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Arduino" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="SuperLED" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
     </panes>
@@ -185,9 +198,9 @@
     <property name="full.screen.before.presentation.mode" value="true" />
     <property name="options.splitter.main.proportions" value="0.16986981" />
     <property name="recentsLimit" value="5" />
-    <property name="options.lastSelected" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="options.lastSelected" value="project.propVCSSupport.Mappings" />
     <property name="SearchEverywhereHistory" value="" />
-    <property name="last_opened_file_path" value="C:/Program Files (x86)/Subversion/bin/svn.exe" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/SparkCore/core-firmware" />
     <property name="restartRequiresConfirmation" value="true" />
     <property name="FullScreen" value="false" />
     <property name="options.splitter.details.proportions" value="0.2" />
@@ -368,7 +381,7 @@
     <option name="SHOW_MERGE_SOURCES_IN_ANNOTATE" value="true" />
     <option name="FORCE_UPDATE" value="false" />
     <option name="IGNORE_EXTERNALS" value="false" />
-    <configuration useDefault="true">$USER_HOME$/.subversion</configuration>
+    <configuration useDefault="true">C:\Users\olesk\AppData\Roaming\Subversion</configuration>
     <myIsUseDefaultProxy>false</myIsUseDefaultProxy>
     <supportedVersion>125</supportedVersion>
   </component>
@@ -376,20 +389,20 @@
     <option name="myMappingRoots">
       <list>
         <SvnCopyRootSimple>
-          <option name="myVcsRoot" value="$PROJECT_DIR$" />
-          <option name="myCopyRoot" value="$PROJECT_DIR$" />
+          <option name="myVcsRoot" value="E:\Dropbox folders\Private\CODE\Python\SuperLED" />
+          <option name="myCopyRoot" value="E:\Dropbox folders\Private\CODE\Python\SuperLED" />
         </SvnCopyRootSimple>
         <SvnCopyRootSimple>
-          <option name="myVcsRoot" value="$PROJECT_DIR$/.idea" />
-          <option name="myCopyRoot" value="$PROJECT_DIR$/.idea" />
+          <option name="myVcsRoot" value="E:\Dropbox folders\Private\CODE\Python\SuperLED\.idea" />
+          <option name="myCopyRoot" value="E:\Dropbox folders\Private\CODE\Python\SuperLED\.idea" />
         </SvnCopyRootSimple>
       </list>
     </option>
     <option name="myMoreRealMappingRoots">
       <list>
         <SvnCopyRootSimple>
-          <option name="myVcsRoot" value="$PROJECT_DIR$" />
-          <option name="myCopyRoot" value="$PROJECT_DIR$" />
+          <option name="myVcsRoot" value="E:\Dropbox folders\Private\CODE\Python\SuperLED" />
+          <option name="myCopyRoot" value="E:\Dropbox folders\Private\CODE\Python\SuperLED" />
         </SvnCopyRootSimple>
       </list>
     </option>
@@ -397,6 +410,7 @@
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="d6f4eb0d-599e-4dec-8d76-5af013d5420a" name="Default" comment="" />
+      <changelist id="cdde8f6f-3906-4a3c-8c1d-06ed65cbea0c" name="Removed by OJ" comment="" />
       <created>1390682315340</created>
       <updated>1390682315340</updated>
     </task>
@@ -468,7 +482,11 @@
       <created>1393085401032</created>
       <updated>1393085401032</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="Back to serial ok. Arduino code tidied up a lot, and a &quot;boot screen&quot; added in the setup() function to show we're alive.">
+      <created>1393197231034</created>
+      <updated>1393197231034</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -492,24 +510,24 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="22" width="1410" height="837" extended-state="0" />
-    <editor active="true" />
+    <frame x="-8" y="-8" width="2576" height="1416" extended-state="6" />
+    <editor active="false" />
     <layout>
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3231623" sideWeight="0.49964765" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32857144" sideWeight="0.49980307" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32301587" sideWeight="0.49940923" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.30870712" sideWeight="0.4989429" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32717678" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.115910724" sideWeight="0.68973213" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.12455004" sideWeight="0.70502645" order="1" side_tool="false" content_ui="combo" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.11579362" sideWeight="0.68973213" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.13903111" sideWeight="0.70502645" order="1" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2524272" sideWeight="0.49964765" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32956952" sideWeight="0.6309227" order="0" side_tool="true" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25725594" sideWeight="0.5003524" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.29403606" sideWeight="0.49964765" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32301587" sideWeight="0.5005908" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2952381" sideWeight="0.49964765" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.34432718" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3286445" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.34432718" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.35403726" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
@@ -530,9 +548,9 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.11736904" sideWeight="0.68973213" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.12684989" sideWeight="0.70502645" order="1" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2787125" sideWeight="0.49964765" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.35403726" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2787125" sideWeight="0.49964765" order="6" side_tool="false" content_ui="tabs" />
     </layout-to-restore>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -544,9 +562,11 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="CHECK_NEW_TODO" value="false" />
     <option name="myTodoPanelSettings">
       <TodoPanelSettings />
     </option>
+    <option name="SHOW_VCS_ERROR_NOTIFICATIONS" value="false" />
     <MESSAGE value="Workspace change" />
     <MESSAGE value="Implemented rudimentary threading" />
     <MESSAGE value="Fixed alternate line inversion bug&#10;&#10;TODO: effects not working on LED (bot fine in curses)" />
@@ -566,19 +586,20 @@
     <MESSAGE value="Last version before changing to socket communication from serial" />
     <MESSAGE value="Back to serial" />
     <MESSAGE value="Back to serial ok. Arduino code tidied up a lot, and a &quot;boot screen&quot; added in the setup() function to show we're alive." />
-    <option name="LAST_COMMIT_MESSAGE" value="Back to serial ok. Arduino code tidied up a lot, and a &quot;boot screen&quot; added in the setup() function to show we're alive." />
+    <MESSAGE value="Major change of architecture.&#10;&#10;WiFi + FastLED library on same Arduino consumes too much RAM, which crashes&#10;&#10;Only solution is to split the work. Will now use two Arduinos. They will communicate over SPI.&#10;&#10;-&gt; Arduino_Serial will connect to LED matrix and send all the data it receives via SPI from Arduino_WiFi&#10;-&gt; Arduino_WiFi will handle wireless connection to Python and pass on all data to Arduino_Serial over SPI.&#10;-&gt; Python code will interface only with Arduino_WiFi &#10;&#10;HW list:&#10;- 2 x Arduinos&#10;- 1 x WiFi (CC3000) Arduino Shield&#10;- 1 x PC with Python&#10;&#10;" />
+    <option name="LAST_COMMIT_MESSAGE" value="Major change of architecture.&#10;&#10;WiFi + FastLED library on same Arduino consumes too much RAM, which crashes&#10;&#10;Only solution is to split the work. Will now use two Arduinos. They will communicate over SPI.&#10;&#10;-&gt; Arduino_Serial will connect to LED matrix and send all the data it receives via SPI from Arduino_WiFi&#10;-&gt; Arduino_WiFi will handle wireless connection to Python and pass on all data to Arduino_Serial over SPI.&#10;-&gt; Python code will interface only with Arduino_WiFi &#10;&#10;HW list:&#10;- 2 x Arduinos&#10;- 1 x WiFi (CC3000) Arduino Shield&#10;- 1 x PC with Python&#10;&#10;" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint type="python-line">
           <url>file://$PROJECT_DIR$/SuperLED_lib.py</url>
-          <line>404</line>
+          <line>309</line>
           <option name="timeStamp" value="81" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="python-line">
           <url>file://$PROJECT_DIR$/SuperLED.py</url>
-          <line>433</line>
+          <line>329</line>
           <option name="timeStamp" value="87" />
         </line-breakpoint>
       </breakpoints>
@@ -589,6 +610,20 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/SuperLED_globals.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="14" column="0" selection-start="232" selection-end="232" vertical-scroll-proportion="0.0" vertical-offset="280" max-vertical-offset="620">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/SuperLED_globals.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="14" column="0" selection-start="232" selection-end="232" vertical-scroll-proportion="0.0" vertical-offset="280" max-vertical-offset="620">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/SuperLED_globals.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="24" column="51" selection-start="682" selection-end="682" vertical-scroll-proportion="0.0" vertical-offset="480" max-vertical-offset="600">
@@ -606,7 +641,21 @@
     <entry file="file://$PROJECT_DIR$/SuperLED_lib.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="3" column="10" selection-start="46" selection-end="46" vertical-scroll-proportion="0.0" vertical-offset="45" max-vertical-offset="1905">
-          <folding />
+          <folding>
+            <marker date="1393411624521" expanded="false" signature="343:555" placeholder="import ..." />
+            <marker date="1393411624521" expanded="true" signature="620:3352" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="698:1172" placeholder="&quot;&quot;&quot;...&quot;&quot;&quot;" />
+            <marker date="1393411624521" expanded="true" signature="6240:7411" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="7428:9279" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="11672:11878" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="11921:12073" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12137:12585" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12139:12406" placeholder="&quot;&quot;&quot;Alpha composite an RGBA Image with a specified color....&quot;&quot;&quot;" />
+            <marker date="1393411624521" expanded="true" signature="12617:12712" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12742:12939" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12995:13634" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="14448:14684" placeholder="..." />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -627,7 +676,21 @@
     <entry file="file://$PROJECT_DIR$/SuperLED_lib.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="77" column="22" selection-start="2454" selection-end="2454" vertical-scroll-proportion="0.0" vertical-offset="1540" max-vertical-offset="3000">
-          <folding />
+          <folding>
+            <marker date="1393411624521" expanded="false" signature="343:555" placeholder="import ..." />
+            <marker date="1393411624521" expanded="true" signature="620:3352" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="698:1172" placeholder="&quot;&quot;&quot;...&quot;&quot;&quot;" />
+            <marker date="1393411624521" expanded="true" signature="6240:7411" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="7428:9279" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="11672:11878" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="11921:12073" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12137:12585" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12139:12406" placeholder="&quot;&quot;&quot;Alpha composite an RGBA Image with a specified color....&quot;&quot;&quot;" />
+            <marker date="1393411624521" expanded="true" signature="12617:12712" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12742:12939" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12995:13634" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="14448:14684" placeholder="..." />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -648,7 +711,21 @@
     <entry file="file://$PROJECT_DIR$/SuperLED_lib.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="32" column="78" selection-start="1203" selection-end="1206" vertical-scroll-proportion="0.0" vertical-offset="480" max-vertical-offset="1965">
-          <folding />
+          <folding>
+            <marker date="1393411624521" expanded="false" signature="343:555" placeholder="import ..." />
+            <marker date="1393411624521" expanded="true" signature="620:3352" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="698:1172" placeholder="&quot;&quot;&quot;...&quot;&quot;&quot;" />
+            <marker date="1393411624521" expanded="true" signature="6240:7411" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="7428:9279" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="11672:11878" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="11921:12073" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12137:12585" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12139:12406" placeholder="&quot;&quot;&quot;Alpha composite an RGBA Image with a specified color....&quot;&quot;&quot;" />
+            <marker date="1393411624521" expanded="true" signature="12617:12712" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12742:12939" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12995:13634" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="14448:14684" placeholder="..." />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -669,7 +746,21 @@
     <entry file="file://$PROJECT_DIR$/SuperLED_lib.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="66" column="10" selection-start="2133" selection-end="2133" vertical-scroll-proportion="0.0" vertical-offset="990" max-vertical-offset="1125">
-          <folding />
+          <folding>
+            <marker date="1393411624521" expanded="false" signature="343:555" placeholder="import ..." />
+            <marker date="1393411624521" expanded="true" signature="620:3352" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="698:1172" placeholder="&quot;&quot;&quot;...&quot;&quot;&quot;" />
+            <marker date="1393411624521" expanded="true" signature="6240:7411" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="7428:9279" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="11672:11878" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="11921:12073" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12137:12585" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12139:12406" placeholder="&quot;&quot;&quot;Alpha composite an RGBA Image with a specified color....&quot;&quot;&quot;" />
+            <marker date="1393411624521" expanded="true" signature="12617:12712" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12742:12939" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12995:13634" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="14448:14684" placeholder="..." />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -690,7 +781,21 @@
     <entry file="file://$PROJECT_DIR$/SuperLED_lib.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="5" column="0" selection-start="49" selection-end="49" vertical-scroll-proportion="0.0" vertical-offset="75" max-vertical-offset="855">
-          <folding />
+          <folding>
+            <marker date="1393411624521" expanded="false" signature="343:555" placeholder="import ..." />
+            <marker date="1393411624521" expanded="true" signature="620:3352" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="698:1172" placeholder="&quot;&quot;&quot;...&quot;&quot;&quot;" />
+            <marker date="1393411624521" expanded="true" signature="6240:7411" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="7428:9279" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="11672:11878" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="11921:12073" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12137:12585" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12139:12406" placeholder="&quot;&quot;&quot;Alpha composite an RGBA Image with a specified color....&quot;&quot;&quot;" />
+            <marker date="1393411624521" expanded="true" signature="12617:12712" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12742:12939" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12995:13634" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="14448:14684" placeholder="..." />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -711,7 +816,21 @@
     <entry file="file://$PROJECT_DIR$/SuperLED_lib.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="5" column="0" selection-start="49" selection-end="49" vertical-scroll-proportion="0.0" vertical-offset="75" max-vertical-offset="855">
-          <folding />
+          <folding>
+            <marker date="1393411624521" expanded="false" signature="343:555" placeholder="import ..." />
+            <marker date="1393411624521" expanded="true" signature="620:3352" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="698:1172" placeholder="&quot;&quot;&quot;...&quot;&quot;&quot;" />
+            <marker date="1393411624521" expanded="true" signature="6240:7411" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="7428:9279" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="11672:11878" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="11921:12073" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12137:12585" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12139:12406" placeholder="&quot;&quot;&quot;Alpha composite an RGBA Image with a specified color....&quot;&quot;&quot;" />
+            <marker date="1393411624521" expanded="true" signature="12617:12712" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12742:12939" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12995:13634" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="14448:14684" placeholder="..." />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -732,7 +851,21 @@
     <entry file="file://$PROJECT_DIR$/SuperLED_lib.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="32" column="0" selection-start="607" selection-end="607" vertical-scroll-proportion="0.0" vertical-offset="480" max-vertical-offset="1080">
-          <folding />
+          <folding>
+            <marker date="1393411624521" expanded="false" signature="343:555" placeholder="import ..." />
+            <marker date="1393411624521" expanded="true" signature="620:3352" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="698:1172" placeholder="&quot;&quot;&quot;...&quot;&quot;&quot;" />
+            <marker date="1393411624521" expanded="true" signature="6240:7411" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="7428:9279" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="11672:11878" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="11921:12073" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12137:12585" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12139:12406" placeholder="&quot;&quot;&quot;Alpha composite an RGBA Image with a specified color....&quot;&quot;&quot;" />
+            <marker date="1393411624521" expanded="true" signature="12617:12712" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12742:12939" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12995:13634" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="14448:14684" placeholder="..." />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -753,7 +886,21 @@
     <entry file="file://$PROJECT_DIR$/SuperLED_lib.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="32" column="0" selection-start="607" selection-end="607" vertical-scroll-proportion="0.0" vertical-offset="640" max-vertical-offset="1440">
-          <folding />
+          <folding>
+            <marker date="1393411624521" expanded="false" signature="343:555" placeholder="import ..." />
+            <marker date="1393411624521" expanded="true" signature="620:3352" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="698:1172" placeholder="&quot;&quot;&quot;...&quot;&quot;&quot;" />
+            <marker date="1393411624521" expanded="true" signature="6240:7411" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="7428:9279" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="11672:11878" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="11921:12073" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12137:12585" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12139:12406" placeholder="&quot;&quot;&quot;Alpha composite an RGBA Image with a specified color....&quot;&quot;&quot;" />
+            <marker date="1393411624521" expanded="true" signature="12617:12712" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12742:12939" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12995:13634" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="14448:14684" placeholder="..." />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -774,7 +921,21 @@
     <entry file="file://$PROJECT_DIR$/SuperLED_lib.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="32" column="0" selection-start="607" selection-end="607" vertical-scroll-proportion="0.0" vertical-offset="640" max-vertical-offset="1440">
-          <folding />
+          <folding>
+            <marker date="1393411624521" expanded="false" signature="343:555" placeholder="import ..." />
+            <marker date="1393411624521" expanded="true" signature="620:3352" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="698:1172" placeholder="&quot;&quot;&quot;...&quot;&quot;&quot;" />
+            <marker date="1393411624521" expanded="true" signature="6240:7411" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="7428:9279" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="11672:11878" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="11921:12073" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12137:12585" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12139:12406" placeholder="&quot;&quot;&quot;Alpha composite an RGBA Image with a specified color....&quot;&quot;&quot;" />
+            <marker date="1393411624521" expanded="true" signature="12617:12712" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12742:12939" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12995:13634" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="14448:14684" placeholder="..." />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -795,7 +956,21 @@
     <entry file="file://$PROJECT_DIR$/SuperLED_lib.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="32" column="0" selection-start="607" selection-end="607" vertical-scroll-proportion="0.0" vertical-offset="640" max-vertical-offset="1440">
-          <folding />
+          <folding>
+            <marker date="1393411624521" expanded="false" signature="343:555" placeholder="import ..." />
+            <marker date="1393411624521" expanded="true" signature="620:3352" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="698:1172" placeholder="&quot;&quot;&quot;...&quot;&quot;&quot;" />
+            <marker date="1393411624521" expanded="true" signature="6240:7411" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="7428:9279" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="11672:11878" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="11921:12073" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12137:12585" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12139:12406" placeholder="&quot;&quot;&quot;Alpha composite an RGBA Image with a specified color....&quot;&quot;&quot;" />
+            <marker date="1393411624521" expanded="true" signature="12617:12712" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12742:12939" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12995:13634" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="14448:14684" placeholder="..." />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -879,45 +1054,49 @@
         <state line="36" column="0" selection-start="1164" selection-end="1164" vertical-scroll-proportion="0.0" vertical-offset="95" max-vertical-offset="630" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/SuperLED_data.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="145" column="0" selection-start="17761" selection-end="17761" vertical-scroll-proportion="0.0" vertical-offset="2900" max-vertical-offset="3320">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/.idea/misc.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="478" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Arduino/SuperLED/SuperLED.ino">
+    <entry file="file://$PROJECT_DIR$/SuperLED.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="287" column="0" selection-start="8843" selection-end="8843" vertical-scroll-proportion="0.31652892" vertical-offset="5357" max-vertical-offset="11000" />
-      </provider>
-    </entry>
-    <entry file="file:///Library/Frameworks/Python.framework/Versions/3.3/lib/python3.3/site-packages/serial/serialposix.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="465" column="0" selection-start="16856" selection-end="16856" vertical-scroll-proportion="0.2778865" vertical-offset="6354" max-vertical-offset="9912" />
+        <state line="17" column="19" selection-start="809" selection-end="809" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="6920">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/SuperLED_lib.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="191" column="0" selection-start="6105" selection-end="6105" vertical-scroll-proportion="0.0" vertical-offset="2508" max-vertical-offset="6230">
-          <folding />
+        <state line="532" column="0" selection-start="18426" selection-end="18426" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="10580">
+          <folding>
+            <marker date="1393411624521" expanded="false" signature="343:555" placeholder="import ..." />
+            <marker date="1393411624521" expanded="true" signature="620:3352" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="698:1172" placeholder="&quot;&quot;&quot;...&quot;&quot;&quot;" />
+            <marker date="1393411624521" expanded="true" signature="6240:7411" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="7428:9279" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="11672:11878" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="11921:12073" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12137:12585" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12139:12406" placeholder="&quot;&quot;&quot;Alpha composite an RGBA Image with a specified color....&quot;&quot;&quot;" />
+            <marker date="1393411624521" expanded="true" signature="12617:12712" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12742:12939" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="12995:13634" placeholder="..." />
+            <marker date="1393411624521" expanded="true" signature="14448:14684" placeholder="..." />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/SuperLED_globals.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="14" column="0" selection-start="232" selection-end="232" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="434">
+        <state line="29" column="0" selection-start="867" selection-end="867" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="700">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/SuperLED.py">
+    <entry file="file://$PROJECT_DIR$/SuperLED_data.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="428" column="30" selection-start="15674" selection-end="15674" vertical-scroll-proportion="0.5982906" vertical-offset="5628" max-vertical-offset="6342">
+        <state line="5" column="32" selection-start="211" selection-end="211" vertical-scroll-proportion="0.0" vertical-offset="100" max-vertical-offset="3360">
           <folding />
         </state>
       </provider>

@@ -1,4 +1,5 @@
-__author__ = 'olesk'
+""" This file contains font and image data used in the SuperLED project
+"""
 
 # 16x16 font, 2 bytes per line for each character, needs unwrapping into [r,g,b] triplet
 font1 = bytes([

@@ -1,6 +1,9 @@
-__author__ = 'olesk'
-
-import SuperLED_globals as glob
+""" This module contains all the supporting functions for SuperLED.py.
+	Only functions that create the final effects for the LED display remain
+	in SuperLED.py, the rest goes here.
+	Some additional global variables are found in and imported from SuperLED_globals.py
+	The font and image data are store in and imported from SuperLED_data.py
+"""
 import curses
 import threading
 from tkinter import *
@@ -9,100 +12,49 @@ import colorsys
 from copy import deepcopy
 from time import sleep, time
 import random
+import SuperLED_globals as glob
+import SuperLED_data
 
 
+def anti_alias_left_10(buffer, original_buffer, current_step):      # TODO: Convert to LVS and average, to make it work on non-monochrome
+		"""
+		Takes one full screen of pixels and scroll them one pixel left with steps using anti-aliasing. Local variables only. No screen updates, only returns buffer.
+		@param original_buffer: the screen buffer, unchanged by this function
+		@param buffer: the screen buffer (normally display_buffer passed as argument)
+		@param current_step: number og intermediate steps to take between pixel fully on and pixel fully off or vice versa
+		@return: the updated screen buffer
+		"""
+		black = [0,0,0]                             # Setting the black pixel color
+		color = [None, None, None]
 
-def tk_draw(buffer):	# TODO: Rebuild with canvas http://www.tutorialspoint.com/python/tk_canvas.htm
-	print("DEBUG: drawing in tk")
-	glob.transmit_flag = 0
+		for pixel in original_buffer:
+			if pixel != [0,0,0]: color = pixel		# Finding the monochrome pixel color
 
-	pixel_multiplier = 50
+		if color == [None, None, None]: return buffer   # If the whole screen is black, we got nothing to do
 
-	width, height = 16 * pixel_multiplier, 16 * pixel_multiplier
+		bright = rgb_get_brightness(color)          # Finding the color's default brightness value
 
-	root = Tk()
+		#	1)	For each real scrolled pixel we scroll 10 "virtual" pixels (between the real pixels)
+		#	2)	We do this by a range(10) loop where we reduce brightness of the original pixel 10% each time IF AND ONLY IF the pixel to the right is black (we work monochrome here). Else skip to 3)
+		#	3)	Similarly we in the same loop increase the brightness of the pixel to the left by 10% (same color)
+		#	4)	After 10 iterations we have a fully saturated pixel on the left of our original pixel (and black pixel to the right if the real pixel to the right was black) and we exit loop to start
+		# 		over again after real pixels have been scrolled one position left
 
-	img = PhotoImage(width=width, height=height)
+		# TODO: Fix the fact that thereis little *visible* difference between the highest brightness value (non-linear relationship)
 
-	x = 0
-	y = 0
-	#color = [str] * 16 * 16
+		change = float((current_step + 1) / 10)
 
+		for col in range(15):           # We go line by line - making a single step for all pixels
+			for row in range(16):       # We iterate over each pixel in the visible_line except the last one (it doesn't have anything to the right)
+				cur_pixel = row * 16 + col
 
+				if original_buffer[cur_pixel + 1] == color and original_buffer[cur_pixel] == black:     # Pixel to the right is ON, and the current isn't --> [[0,0,0], [125,50,0]]
+					buffer[cur_pixel] = rgb_set_brightness(color, bright * change)						# We migrate ON pixel from the right onto this one (if it's already lit -> no change)
 
-	print("len(buffer)", len(buffer))
-	for n in range(0, int(len(buffer)), 3):
-		for inner_y in range(pixel_multiplier):
-			for inner_x in range(pixel_multiplier):
-				hex_code = "#%02x%02x%02x" % (buffer[n + 0],buffer[n + 1],buffer[n + 2])
-				img.put(hex_code, (x + inner_x, y + inner_y))
+				if original_buffer[cur_pixel + 1] == black and original_buffer[cur_pixel] == color:		# Pixel to the right is OFF, and the current isn't  --> [[125,50,0], [0,0,0]]
+					buffer[cur_pixel] = rgb_set_brightness(color, bright * (1 - change))				# We migrate OFF pixel from the right onto this one (if it's already lit -> no change)
 
-		x += pixel_multiplier
-		if x == 16 * pixel_multiplier:
-			x = 0
-			y += pixel_multiplier
-
-
-
-		#img.put("#ffffff", (x//4,y))
-
-
-	label = Label(root, image=img, bg="#000000")
-	label.grid()
-	root.mainloop()
-
-
-def effects():
-	"""
-	Adds fancy effects and is responsible to compensating for the display's zigzag pattern of LEDs
-	@param glob.led_buffer: the full RGB led buffer
-	@return: updated RGB led buffer ready to transmit
-	"""
-	transmit_buffer = deepcopy(glob.led_buffer) # Required, otherwise glob.led_buffer can get modified by other thread while we're working here
-
-
-	"""
-		Due to the LEDs on this particular display being in a zigzag pattern, we need to reverse the orientation of
-		every second line. 1,3,5,7,9,11,13,15 to be precise. But *without* reversing the byte values.
-	"""
-
-	# Reversing the zigzag pattern
-	if glob.DISPLAY_MODE == 'LED':
-		for line in range(1,16,2):  # Every second line from 1 to and including 15
-			for led in range(16 - 1, -1, -1):
-				glob.line_buffer[15 - led] = transmit_buffer[line * 16 + led]
-
-			transmit_buffer[line * 16:line * 16 + 16] = glob.line_buffer[0:16]
-
-
-	if effects.active_effect == 'rain':     # Makes the screen "rain away"
-		effects.iterations = 14
-		effects.random_pixels = random.sample(range(16), 16)    # Randomly ordered pixels
-		line = 14 - effects.progress    # We start with the seond line from the bottom
-		for x in effects.random_pixels:
-			color = get_pixel(x, line)      # From led_buffer
-			transmit_buffer[x + (line + 1) * 16] = color
-			transmit_buffer[x + line * 16] = [0x00, 0x00, 0x00]
-
-	else: effects.iterations = 0
-
-	if effects.progress == effects.iterations:
-		effects.progress = 0    # We're done, making ready for another run/effect
-		effects.active_effect = 'none'
-	else: effects.progress += 1
-
-	#
-	# Finally, we convert the whole transmit_buffer list into a string of bytes that we can write to curses/Arduino
-	#
-	buffer = bytearray()
-
-
-	for rgb in transmit_buffer:          # For each led... 256 in total
-		buffer.append(rgb[0])
-		buffer.append(rgb[1])
-		buffer.append(rgb[2])
-
-	return buffer
+		return buffer
 
 
 def convert_buffer():
@@ -178,198 +130,151 @@ def curses_draw(buffer):
 	return
 
 
-def init_thread(thread_function, *args):
-	t = threading.Thread(target=thread_function, args = args,)
-	t.daemon = True  # thread dies when main thread (only non-daemon thread) exits.
-	t.start()
-
-
-def transmit_loop(ser): # TODO: Implement timer that checks for minimum intervall between transmissons
-	"""
-	The main LED update loop that runs perpetually.
-	"""
-	while True:
-		if type(glob.led_buffer[0][0]) is not int: glob.transmit_flag = 0     # We skip if the glob.led_buffer is not ready yet
-
-		if glob.transmit_flag:
-			glob.transmit_flag = 0   # Make sure we don't end up sending several times on top of eachother
-								# Means we must actively set glob.transmit_flag = 1 in outside code
-			draw_screen(ser)
-
-
-# noinspection PyUnusedLocal,PyUnusedLocal,PyShadowingNames
-def signal_handler(signal, frame):
-	print('- Interrupted manually, aborting')
-	blank(glob.ser)
-	if glob.DISPLAY_MODE == 'LED': glob.ser.close()
-	if glob.DISPLAY_MODE == 'curses': curses.endwin()
-	if glob.DISPLAY_MODE == 'tkinter': pass
-	sys.exit(0)
-
-
 # noinspection PyShadowingNames,PyShadowingNames
-def draw_screen(ser):
+def buffer_to_screen(server):
 	try:
-		draw_screen.start
+		buffer_to_screen.start
 	except:
-		draw_screen.start = time()
+		buffer_to_screen.start = time()
 
-	if time() - draw_screen.start < 0.033: return       # We cap transfers at about 30 frames/second
-	draw_screen.start = time()
+	if time() - buffer_to_screen.start < 0.033:
+		print("DEBUG: TOO FAST UPDATES")
+		return       # We cap transfers at about 30 frames/second
+	buffer_to_screen.start = time()
 
 	if glob.DISPLAY_MODE == 'curses':
 		curses_draw(convert_buffer())
 	elif glob.DISPLAY_MODE == 'tkinter':
 		tk_draw(convert_buffer())
 	else:		# We default to LED - meaning we normally use this function to update the LED display - tkinter/curses is for debugging mostly
-		if ser.write(b'G') != 1:
+		if server.send(b'G') != 1:
 			print("- Go code 'G' failed")
 			sys.exit("Unable to send go code to Arduino")
-
-		response = ser.read(size=1)
-		if response == b'A':
-			pass
-			#print("Arduino: buffer read command received!")
-		else:
+		response = server.recv(1)
+		if response != b'A':
 			print("- Go code NOT acknowledged by Arduino - aborting...")
 			sys.exit()
 
-		ser.write(convert_buffer())    # <--- there she goes, notice that even without active effect, we need this to compensate for zigzag LED display
+		#for n in convert_buffer():
+		#	print(n);
+		#	server.send(bytes(n))
+		print("Sent bytes: ", server.sendall(convert_buffer()))
+
 
 		if glob.DEBUG:
-			print("Display updates:\033[1m", draw_screen.updates, "\033[0m", end='\r')
-			draw_screen.updates += 1
+			print("Display updates:\033[1m", buffer_to_screen.updates, "\033[0m", end='\r')
+			buffer_to_screen.updates += 1
 
-		response = ser.read(size=1)
+		while server.recv(1) != b'R': pass
 
-		if response == b'E':
-			print("Arduino: ERROR - aborting...")
+		#response = server.recv(1)
+
+		#if response == b'E':
+		#	print("Arduino: ERROR - aborting...")
+		#	sys.exit()
+
+
+def effects():
+	"""
+	Adds fancy effects and is responsible to compensating for the display's zigzag pattern of LEDs
+	@param glob.led_buffer: the full RGB led buffer
+	@return: updated RGB led buffer ready to transmit
+	"""
+	transmit_buffer = deepcopy(glob.led_buffer) # Required, otherwise glob.led_buffer can get modified by other thread while we're working here
+
+
+	"""
+		Due to the LEDs on this particular display being in a zigzag pattern, we need to reverse the orientation of
+		every second line. 1,3,5,7,9,11,13,15 to be precise. But *without* reversing the byte values.
+	"""
+
+	# Reversing the zigzag pattern
+	if glob.DISPLAY_MODE == 'LED':
+		for line in range(1,16,2):  # Every second line from 1 to and including 15
+			for led in range(16 - 1, -1, -1):
+				glob.line_buffer[15 - led] = transmit_buffer[line * 16 + led]
+
+			transmit_buffer[line * 16:line * 16 + 16] = glob.line_buffer[0:16]
+
+
+	if effects.active_effect == 'rain':     # Makes the screen "rain away"
+		effects.iterations = 14
+		effects.random_pixels = random.sample(range(16), 16)    # Randomly ordered pixels
+		line = 14 - effects.progress    # We start with the seond line from the bottom
+		for x in effects.random_pixels:
+			color = get_pixel(x, line)      # From led_buffer
+			transmit_buffer[x + (line + 1) * 16] = color
+			transmit_buffer[x + line * 16] = [0x00, 0x00, 0x00]
+
+	else: effects.iterations = 0
+
+	if effects.progress == effects.iterations:
+		effects.progress = 0    # We're done, making ready for another run/effect
+		effects.active_effect = 'none'
+	else: effects.progress += 1
+
+	#
+	# Finally, we convert the whole transmit_buffer list into a string of bytes that we can write to curses/Arduino
+	#
+	buffer = bytearray()
+
+
+	for rgb in transmit_buffer:          # For each led... 256 in total
+		buffer.append(rgb[0])
+		buffer.append(rgb[1])
+		buffer.append(rgb[2])
+
+	return buffer
+
+
+def ext_effect(server, effect, effect_value = None):
+	"""
+	Triggers an external effect (i.e. makes the Arduino perform the effect for us
+	@param server: Server connection (Arduino)
+	@param effect: Effect name
+	@param effect_value: Effect value
+	"""
+	glob.transmit_flag = 0
+
+	if effect == 'brightness': hw_effect = b'B'
+	if effect == 'hw_test': hw_effect = b'T'
+	if effect == 'blank': hw_effect = b'Z'
+
+	#if glob.DEBUG: print("\n---> Changing", effect, "to", effect_value, "!")
+
+	if glob.DISPLAY_MODE == 'LED':
+		if server.send(hw_effect) != 1:
+			print("- Sending of effect code,", hw_effect, "failed")
 			sys.exit()
 
+		response = server.recv(1)
 
-def pure_pil_alpha_to_color_v2(image, color=(255, 255, 255)):
-	"""Alpha composite an RGBA Image with a specified color.
+		if response == b'A':
+			if glob.DEBUG: print("Arduino >>", effect, "command acknowledged!")
+		else:
+			print("- Effect code", effect, " (code: ", hw_effect, ") NOT acknowledged by Arduino - aborting...")
+			sys.exit()
 
-	Simpler, faster version than the solutions above.
+		if effect_value:    # Could be None
+			value_string = bytes([effect_value])
+			print(value_string)
+			server.send(value_string)       # Send the 3 digits as bytes
 
-	Source: http://stackoverflow.com/a/9459208/284318
+			response = server.recv(1)
+			if response == b'A':    # Value acknowledged
+				if glob.DEBUG: print("Arduino >>", effect, "value acknowledged!")
+			if response == b'E':    # Error reported by Arduino
+					print("Arduino >> ERROR: value not received")
+					sys.exit()
+			if response == -1:      # Unable to send value to Arduino
+				print("ERROR: Nothing read from Arduino")
+				sys.exit()
 
-	Keyword Arguments:
-	image -- PIL RGBA Image object
-	color -- Tuple r, g, b (default 255, 255, 255)
+		# Since some of these effects can take some time, we wait here until we get 'D'one from the Arduino
+		while True:
+			if server.recv(1) == b'D': break
 
-	"""
-	image.load()  # needed for split()
-	background = Image.new('RGB', image.size, color)
-	background.paste(image, mask=image.split()[3])  # 3 is the alpha channel
-	return background
-
-
-def blank(ser):
-	"""
-	Blanks the LED display by sending a zero ('Z') code to the Arduino
-	@param ser: serial link
-	"""
-	if glob.DISPLAY_MODE != 'LED': return()
-
-	glob.transmit_flag = 0   # We need to make sure we don't mess with the normal screen update
-
-	if ser.write(b'Z') != 1:
-		print("- Zero code 'G' failed in Blank()")
-		sys.exit("Unable to send go code to Arduino in Blank()")
-
-	response = ser.read(size=1)
-
-	if response == b'A':
-		print("Arduino >> Zero code acknowledged!")
-	else:
-		print("- Zero code NOT acknowledged by Arduino in Blank() - aborting...")
-		sys.exit()
-
-	# Since some of these effects can take some time, we wait here until we get 'D'one from the Arduino
-	waiting = True
-	while waiting:
-		if ser.read(size=1) == b'D': waiting = False
-
-
-def rgb_adjust_brightness(rgb_values, bright_change):
-	"""
-	Adjusts "lightness" of r,g,b values
-	@param rgb_values: list of [r, g, b]
-	@param bright_change: change in brightness (-1 .. +1)
-	@return: rgb_values: list of [r, g, b]
-	"""
-	hls_values = list(colorsys.rgb_to_hls(rgb_values[0] / 255, rgb_values[1] / 255, rgb_values[2] / 255))
-
-	hls_values[1] = hls_values[1] + bright_change * hls_values[1]
-	if hls_values[1] > 1: hls_values[1] = 1
-	if hls_values[1] < 0: hls_values[1] = 0
-
-	rgb_values = list(colorsys.hls_to_rgb(hls_values[0], hls_values[1], hls_values[2]))
-	rgb_values = [int(x * 255) for x in rgb_values]            # Converting from 0-1 (float) to 0-255 (int)
-	return rgb_values
-
-
-def rgb_set_brightness(rgb_values, brightness):
-	"""
-	Adjusts "lightness" of r,g,b values
-	@param rgb_values: list of [r, g, b]
-	@param brightness: brightness (0-1)
-	@return: rgb_values: list of [r, g, b]
-	"""
-	hls_values = list(colorsys.rgb_to_hls(rgb_values[0] / 255, rgb_values[1] / 255, rgb_values[2] / 255))
-
-	hls_values[1] = brightness
-
-	rgb_values = list(colorsys.hls_to_rgb(hls_values[0], hls_values[1], hls_values[2]))
-	rgb_values = [int(x * 255) for x in rgb_values]            # Converting from 0-1 (float) to 0-255 (int)
-	return rgb_values
-
-
-def rgb_get_brightness(rgb_values):
-	hls_values = list(colorsys.rgb_to_hls(rgb_values[0] / 255, rgb_values[1] / 255, rgb_values[2] / 255))
-	return hls_values[1]
-
-
-def anti_alias_left_10(buffer, original_buffer, current_step):      # TODO: Convert to LVS and average, to make it work on non-monochrome
-		"""
-		Takes one full screen of pixels and scroll them one pixel left with steps using anti-aliasing. Local variables only. No screen updates, only returns buffer.
-		@param original_buffer: the screen buffer, unchanged by this function
-		@param buffer: the screen buffer (normally display_buffer passed as argument)
-		@param current_step: number og intermediate steps to take between pixel fully on and pixel fully off or vice versa
-		@return: the updated screen buffer
-		"""
-		black = [0,0,0]                             # Setting the black pixel color
-		color = [None, None, None]
-
-		for pixel in original_buffer:
-			if pixel != [0,0,0]: color = pixel		# Finding the monochrome pixel color
-
-		if color == [None, None, None]: return buffer   # If the whole screen is black, we got nothing to do
-
-		bright = rgb_get_brightness(color)          # Finding the color's default brightness value
-
-		#	1)	For each real scrolled pixel we scroll 10 "virtual" pixels (between the real pixels)
-		#	2)	We do this by a range(10) loop where we reduce brightness of the original pixel 10% each time IF AND ONLY IF the pixel to the right is black (we work monochrome here). Else skip to 3)
-		#	3)	Similarly we in the same loop increase the brightness of the pixel to the left by 10% (same color)
-		#	4)	After 10 iterations we have a fully saturated pixel on the left of our original pixel (and black pixel to the right if the real pixel to the right was black) and we exit loop to start
-		# 		over again after real pixels have been scrolled one position left
-
-		# TODO: Fix the fact that thereis little *visible* difference between the highest brightness value (non-linear relationship)
-
-		change = float((current_step + 1) / 10)
-
-		for col in range(15):           # We go line by line - making a single step for all pixels
-			for row in range(16):       # We iterate over each pixel in the visible_line except the last one (it doesn't have anything to the right)
-				cur_pixel = row * 16 + col
-
-				if original_buffer[cur_pixel + 1] == color and original_buffer[cur_pixel] == black:     # Pixel to the right is ON, and the current isn't --> [[0,0,0], [125,50,0]]
-					buffer[cur_pixel] = rgb_set_brightness(color, bright * change)						# We migrate ON pixel from the right onto this one (if it's already lit -> no change)
-
-				if original_buffer[cur_pixel + 1] == black and original_buffer[cur_pixel] == color:		# Pixel to the right is OFF, and the current isn't  --> [[125,50,0], [0,0,0]]
-					buffer[cur_pixel] = rgb_set_brightness(color, bright * (1 - change))				# We migrate OFF pixel from the right onto this one (if it's already lit -> no change)
-
-		return buffer
+		print("Arduino >> Effect completed successfully")
 
 
 def get_line(x1, y1, x2, y2):
@@ -415,6 +320,40 @@ def get_line(x1, y1, x2, y2):
 	return points
 
 
+def get_pixel(x, y):
+	"""
+	get_pixel reads a single pixel color value from the display_buffer
+	@param x: x coordinate (0-15)
+	@param y: y coordinate (0-15)
+	@param color: list [r, g, b]
+	"""
+	return glob.led_buffer[x + y * 16]
+
+
+def init_thread(thread_function, *args):
+	t = threading.Thread(target=thread_function, args = args,)
+	t.daemon = True  # thread dies when main thread (only non-daemon thread) exits.
+	t.start()
+
+
+def pure_pil_alpha_to_color_v2(image, color=(255, 255, 255)):
+	"""Alpha composite an RGBA Image with a specified color.
+
+	Simpler, faster version than the solutions above.
+
+	Source: http://stackoverflow.com/a/9459208/284318
+
+	Keyword Arguments:
+	image -- PIL RGBA Image object
+	color -- Tuple r, g, b (default 255, 255, 255)
+
+	"""
+	image.load()  # needed for split()
+	background = Image.new('RGB', image.size, color)
+	background.paste(image, mask=image.split()[3])  # 3 is the alpha channel
+	return background
+
+
 def put_line(x1, y1, x2, y2):
 	for coordinate in get_line(x1,y1,x2,y2):
 		put_pixel(coordinate[0], coordinate[1], [255,0,0])
@@ -430,11 +369,164 @@ def put_pixel(x, y, color):
 	glob.led_buffer[x + y * 16] = color
 
 
-def get_pixel(x, y):
+def rgb_adjust_brightness(rgb_values, bright_change):
 	"""
-	get_pixel reads a single pixel color value from the display_buffer
-	@param x: x coordinate (0-15)
-	@param y: y coordinate (0-15)
-	@param color: list [r, g, b]
+	Adjusts "lightness" of r,g,b values
+	@param rgb_values: list of [r, g, b]
+	@param bright_change: change in brightness (-1 .. +1)
+	@return: rgb_values: list of [r, g, b]
 	"""
-	return glob.led_buffer[x + y * 16]
+	hls_values = list(colorsys.rgb_to_hls(rgb_values[0] / 255, rgb_values[1] / 255, rgb_values[2] / 255))
+
+	hls_values[1] = hls_values[1] + bright_change * hls_values[1]
+	if hls_values[1] > 1: hls_values[1] = 1
+	if hls_values[1] < 0: hls_values[1] = 0
+
+	rgb_values = list(colorsys.hls_to_rgb(hls_values[0], hls_values[1], hls_values[2]))
+	rgb_values = [int(x * 255) for x in rgb_values]            # Converting from 0-1 (float) to 0-255 (int)
+	return rgb_values
+
+
+def rgb_get_brightness(rgb_values):
+	hls_values = list(colorsys.rgb_to_hls(rgb_values[0] / 255, rgb_values[1] / 255, rgb_values[2] / 255))
+	return hls_values[1]
+
+
+def rgb_set_brightness(rgb_values, brightness):
+	"""
+	Adjusts "lightness" of r,g,b values
+	@param rgb_values: list of [r, g, b]
+	@param brightness: brightness (0-1)
+	@return: rgb_values: list of [r, g, b]
+	"""
+	hls_values = list(colorsys.rgb_to_hls(rgb_values[0] / 255, rgb_values[1] / 255, rgb_values[2] / 255))
+
+	hls_values[1] = brightness
+
+	rgb_values = list(colorsys.hls_to_rgb(hls_values[0], hls_values[1], hls_values[2]))
+	rgb_values = [int(x * 255) for x in rgb_values]            # Converting from 0-1 (float) to 0-255 (int)
+	return rgb_values
+
+
+# noinspection PyUnusedLocal,PyUnusedLocal,PyShadowingNames
+def signal_handler(signal, frame):
+	print('- Interrupted manually, aborting')
+	ext_effect(glob.Arduino, 'blank')
+	if glob.DISPLAY_MODE == 'LED': glob.Arduino.close()
+	if glob.DISPLAY_MODE == 'curses': curses.endwin()
+	if glob.DISPLAY_MODE == 'tkinter': pass
+	sys.exit(0)
+
+
+def tk_draw(buffer):        # TODO: Rebuild with canvas http://www.tutorialspoint.com/python/tk_canvas.htm
+	print("DEBUG: drawing in tk")
+	glob.transmit_flag = 0
+
+	pixel_multiplier = 50
+
+	width, height = 16 * pixel_multiplier, 16 * pixel_multiplier
+
+	root = Tk()
+
+	img = PhotoImage(width=width, height=height)
+
+	x = 0
+	y = 0
+	#color = [str] * 16 * 16
+
+
+
+	print("len(buffer)", len(buffer))
+	for n in range(0, int(len(buffer)), 3):
+		for inner_y in range(pixel_multiplier):
+			for inner_x in range(pixel_multiplier):
+				hex_code = "#%02x%02x%02x" % (buffer[n + 0],buffer[n + 1],buffer[n + 2])
+				img.put(hex_code, (x + inner_x, y + inner_y))
+
+		x += pixel_multiplier
+		if x == 16 * pixel_multiplier:
+			x = 0
+			y += pixel_multiplier
+
+
+
+		#img.put("#ffffff", (x//4,y))
+
+
+	label = Label(root, image=img, bg="#000000")
+	label.grid()
+	root.mainloop()
+
+
+def text_to_buffer(display_text, red, green, blue):
+	"""
+	Creates a buffer (in display_buffer) that contains the full text
+	@rtype : length of text string (letters)
+	@param display_text: The text we will put in the display_buffer (which can be of arbitrary size, unlike the glob.led_buffer (which is always 16*16*3)
+	@param red: red value (0-255)
+	@param green: green value (0-255)
+	@param blue: blue value (0-255)
+	"""
+
+	font = SuperLED_data.font1
+
+	# We "cheat" by adding a padding space at the beginning and end, which will allow us to smoothly scroll the last letter off the screen
+	# with a 16x16 font and the first onto the screen
+	display_text = " " + display_text + " "
+
+	# We now build a large array of our text
+	letter_counter = 0
+
+	# We use 16 (one for each line) bytearrays to store the letter, and add new ones at the end
+	msg_buffer = [bytearray()] * 16     # List of 16 bytearrays
+
+	for letter in display_text:  # Letter loop
+		font_index = (ord(letter) - 32) * 32    # ASCII - 32 is start of our fonts, and each font is 32 bytes (256 bits/monochrome pixels)
+		text_buffer = font[font_index:(font_index + 32)]
+
+		for line in range(16):    # Line loop
+			msg_buffer[line] = msg_buffer[line] + text_buffer[line * 2: (line * 2) + 2]
+
+		letter_counter += 1
+
+
+	# msg_buffer is a LIST of bytearrays, each of 2 bytes
+
+	display_buffer = []
+
+	for msg_line in msg_buffer:		# Each element in the msg_buffer is a bytearray line
+		for pixel in msg_line:
+		# First we split each byte of pixels into separate pixels and adds a 1 or 0 three times (since we later will add 3 colors to each LED)
+			for bin_pos in range(8):
+				first = pixel >> 7 - bin_pos
+				first &= 0x01
+				display_buffer.append([first] * 3)    # 1 or 0 is added 3 times to make it easier to add colors later
+
+
+	# display_buffer is a list of lists, each inner list consisting of 3 ints, each of these 1 or 0
+
+	# We iterate through the display_buffer. We can cheat, as we know each letter in the standard for is 16x16 pixels (with plenty of space on both side).
+	# Thus we simply remove the two first and last colums for each letter.
+	# TODO: Remove columns here to reduce space between letters
+
+	# We can now multiply all the inner lists with the right color values
+
+	for led in display_buffer:
+		led[0] *= red
+		led[1] *= green
+		led[2] *= blue
+
+	return len(display_text), display_buffer
+
+
+def transmit_loop(server):  # TODO: Implement timer that checks for minimum intervall between transmissons
+	"""
+	The main LED update loop that runs perpetually.
+	"""
+	while True:
+		if type(glob.led_buffer[0][0]) is not int: glob.transmit_flag = 0     # We skip if the glob.led_buffer is not ready yet
+
+		if glob.transmit_flag:
+			glob.transmit_flag = 0   # Make sure we don't end up sending several times on top of eachother
+								# Means we must actively set glob.transmit_flag = 1 in outside code
+			buffer_to_screen(server)
