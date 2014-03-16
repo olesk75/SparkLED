@@ -18,6 +18,17 @@ import requests
 from SuperLED_lib import *
 import SuperLED_data
 
+<<<<<<< .mine
+
+# Spark Core device ID: 48ff74065067555037201287 and access token: fbc3cd7865c567b740b60543b6adb348d7f76c1f
+# curl "https://api.spark.io/v1/devices/48ff74065067555037201287/ip?access_token=fbc3cd7865c567b740b60543b6adb348d7f76c1f"
+IPdict = requests.get('https://api.spark.io/v1/devices/48ff74065067555037201287/ipAddress?access_token=fbc3cd7865c567b740b60543b6adb348d7f76c1f').json()
+IP = IPdict["result"]
+print("- Spark Core found at addess", IP)
+PORT = 2208        	 # Must match Arduino server port
+
+=======
+>>>>>>> .r36
 # Global variable definitions
 glob.NUM_LEDS = 256
 glob.DEBUG = 1       # Increase verbosity
@@ -52,9 +63,14 @@ def initialize():
 	except socket.error as error:
 		print("ERROR: Connect failed:", format(error))
 		sys.exit()
+<<<<<<< .mine
+	print("- Connected to Arduino server successfully")
+	arduino.send(b' ')  # Just a friendly wakeup
+=======
 	print("- Connected to SparkCore server successfully")
 	glob.connected = True
 	sparkCore.send(b' ')  # Just a friendly wakeup
+>>>>>>> .r36
 
 	while True:
 		if sparkCore.recv(1) == b'S': break     # We're stuck here until the SparkCore sends us the S (start) command
@@ -292,26 +308,48 @@ if __name__ == "__main__":  # Making sure we don't have problems if importing fr
 
 	signal.signal(signal.SIGINT, signal_handler)    # Setting up th signal handler to arrange tidy exit if manually interrupted
 
+<<<<<<< .mine
+	ext_effect(glob.Arduino,'hw_test')             # Test LED display using Arduino function
+	ext_effect(glob.Arduino,'brightness', 255)      # Set LED screen brightness (0-255) using Arduino function (no impact on display_buffer)
+
+####	init_thread(transmit_loop, glob.Arduino)        # Starts main transmit thread - to LED if not glob.OFFLINE, curses otherwise
+=======
 	init_thread(transmit_loop, glob.sparkCore)           # Starts main transmit thread - to LED if not glob.OFFLINE, curses otherwise
+>>>>>>> .r36
 													# Does nothing until a function sets glob.transmit_flag = True
 
+<<<<<<< .mine
+	ext_effect(glob.Arduino, 'blank')
+	sleep(5)
+=======
 	#ext_effect(glob.sparkCore, 'blank')
 
+>>>>>>> .r36
 	#################################################################################################################################################
 	#   This is the main loop - it processes sensor inputs and timers and controls what goes on the display and when                                #
 	#	It never exists unless there is an error.                                                                                                   #
 	#################################################################################################################################################
+<<<<<<< .mine
+
+	counter = 0
+
+=======
 
 	counter = 0
 
 	#sleep(3)
+>>>>>>> .r36
 	while True:
 		if not glob.connected: glob.sparkCore = initialize()     # If we loose the connection we try reconnecting
 
 		#clock_digital([255,128,0])
 		#(text_length, text_buffer) = text_to_buffer("Scrolling is fun!?!", 100, 10, 10)   # Put text message in large (16 row high) buffer
 		#init_thread(scroll_display_buffer, text_length, 5, text_buffer)
+<<<<<<< .mine
+
+=======
 		#while True:pass
+>>>>>>> .r36
 		#while True: print("I am free")
 		#clock_digital([128,0,0])
 
@@ -319,12 +357,22 @@ if __name__ == "__main__":  # Making sure we don't have problems if importing fr
 		#effects.active_effect = 'rain'
 
 		#show_img('images/bell.png')
+<<<<<<< .mine
+		#sleep(1)
+		#show_img('images/skull.png')
+		#sleep(1)
+
+		#while True: pass
+		#show_img('images/fractal.gif')      # "Cheat" to show colorful fractal using animated gif
+		#while True: show_img('images/ikanim.gif')
+=======
 		#sleep(1)
 		#show_img('images/skull.png')
 		#sleep(1)
 		#ext_effect(SparkCore,'hw_test')             # Test LED display using SparkCore function
 		#ext_effect(SparkCore,'brightness', 30)
 		#ext_effect(SparkCore,'hw_test')             # Test LED display using SparkCore function
+>>>>>>> .r36
 
 		while True: show_img('images/fractal.gif')      # "Cheat" to show colorful fractal using animated gif
 		#while True: pass
@@ -339,4 +387,36 @@ if __name__ == "__main__":  # Making sure we don't have problems if importing fr
 		#sleep(2)
 		#show_img('images/ajax_loader_bar.gif')
 
+<<<<<<< .mine
 		#show_img('images/padlock.png')
+
+		sleepy = 0
+
+		#Performing manual testing
+		for i in range(256):
+			glob.led_buffer[i] = [0, 255, 0]  # 256 x 3 list
+		glob.Arduino.send(b'G')
+		glob.Arduino.sendall(convert_buffer())
+		print("Sent")
+		while True:
+			glob.transmit_flag = False
+			if glob.Arduino.recv(1) == b'D': break
+		print("Ack'ed", str(counter))
+		counter+=1
+
+		sleep(sleepy)
+
+		for i in range(256):
+			glob.led_buffer[i] = [255, 0, 0]  # 256 x 3 list
+		glob.Arduino.send(b'G')
+		byte_buffer = convert_buffer()
+		glob.Arduino.sendall(convert_buffer())
+		print("Sent")
+		while True:
+			glob.transmit_flag = False
+			if glob.Arduino.recv(1) == b'D': break
+		print("Ack'ed", str(counter))
+		counter+=1
+
+		sleep(sleepy)=======
+		#show_img('images/padlock.png')>>>>>>> .r36

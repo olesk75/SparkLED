@@ -138,17 +138,33 @@ def curses_draw(buffer):
 # noinspection PyShadowingNames,PyShadowingNames
 def buffer_to_screen(server):
 
+<<<<<<< .mine
+	if time() - buffer_to_screen.start < 0.033:
+		print("DEBUG: TOO FAST UPDATES, skipping")
+		return       # We cap transfers at about 30 frames/second
+	buffer_to_screen.start = time()
+
+=======
+>>>>>>> .r36
 	if glob.DISPLAY_MODE == 'curses':
 		curses_draw(convert_buffer())
 
 	else:		# We default to LED - meaning we normally use this function to update the LED display - tkinter/curses is for debugging mostly
 		if server.send(b'G') != 1:
 			print("- Go code 'G' failed")
+<<<<<<< .mine
+			sys.exit("Unable to send go code to Arduino")
+		# response = server.recv(1)
+		# if response != b'A':
+		# 	print("- Go code NOT acknowledged by Arduino - aborting...")
+		# 	sys.exit()
+=======
 			sys.exit("Unable to send go code to Spark Core")
 		# response = server.recv(1)
 		# if response != b'A':
 		# 	print("- Go code NOT acknowledged by Arduino - aborting...")
 		# 	sys.exit()
+>>>>>>> .r36
 
 		#for n in convert_buffer():
 		#	print(n);
@@ -159,8 +175,13 @@ def buffer_to_screen(server):
 			glob.transmit_flag = False
 			if server.recv(1) == b'D': break
 
+<<<<<<< .mine
+		print("ACK from Spark Core")
+
+=======
 		#print("ACK from Spark Core")
 
+>>>>>>> .r36
 		if glob.DEBUG:
 			print("Display updates:\033[1m", buffer_to_screen.updates, "\033[0m", end='\r')
 			buffer_to_screen.updates += 1
@@ -247,19 +268,51 @@ def ext_effect(server, effect, effect_value = None):
 			print("- Sending of effect code,", hw_effect, "failed")
 			sys.exit()
 
+<<<<<<< .mine
+		#response = server.recv(1)
+		#
+		# if response == b'A':
+		# 	if glob.DEBUG: print("Arduino >>", effect, "command acknowledged!")
+		# else:
+		# 	print("- Effect code", effect, " (code: ", hw_effect, ") NOT acknowledged by Arduino - aborting...")
+		# 	sys.exit()
+=======
+>>>>>>> .r36
 
 		if effect_value:    # Could be None
 			value_string = bytes([effect_value])
 			#print(value_string)
 			server.send(value_string)       # Send the 3 digits as bytes
 
+<<<<<<< .mine
+		# 	response = server.recv(1)
+		# 	if response == b'A':    # Value acknowledged
+		# 		if glob.DEBUG: print("Arduino >>", effect, "value acknowledged!")
+		# 	if response == b'E':    # Error reported by Arduino
+		# 			print("Arduino >> ERROR: value not received")
+		# 			sys.exit()
+		# 	if response == -1:      # Unable to send value to Arduino
+		# 		print("ERROR: Nothing read from Arduino")
+		# 		sys.exit()
+		#
+		# # Since some of these effects can take some time, we wait here until we get 'D'one from the Arduino
+		# while True:
+		# 	if server.recv(1) == b'D': break
+		#
+		# print("Arduino >> Effect completed successfully")
+
+=======
 		# Since some of these effects can take some time, we wait here until we get 'D'one from the Spark Core
 		while True:
 			if server.recv(1) == b'D': break
+>>>>>>> .r36
 
+<<<<<<< .mine
+=======
 		print("- Spark Core reports effect completed successfully")
 
 
+>>>>>>> .r36
 def get_line(x1, y1, x2, y2):
 	"""
 	Bresenham's Line Algorithm
@@ -395,9 +448,15 @@ def rgb_set_brightness(rgb_values, brightness):
 def signal_handler(signal, frame):
 	glob.transmit_flag = False
 	print('- Interrupted manually, aborting')
+<<<<<<< .mine
+	ext_effect(glob.Arduino, 'blank')
+	glob.Arduino.send(b'Q')     # Telling Spark Core to hang up connection
+	if glob.DISPLAY_MODE == 'LED': glob.Arduino.close()
+=======
 	ext_effect(glob.sparkCore, 'blank')
 	glob.sparkCore.send(b'Q')     # Telling Spark Core to hang up connection
 	if glob.DISPLAY_MODE == 'LED': glob.sparkCore.close()
+>>>>>>> .r36
 	if glob.DISPLAY_MODE == 'curses': curses.endwin()
 	if glob.DISPLAY_MODE == 'tkinter': pass
 	sys.exit(0)
@@ -547,7 +606,11 @@ def transmit_loop(server):  # TODO: Reinitialize the connection if the keep-aliv
 
 
 		if glob.transmit_flag:
+<<<<<<< .mine
+			glob.transmit_flag = 0   # Make sure we don't end up sending several times on top of eachother
+								# Means we must actively set glob.transmit_flag = 1 in outside code
+			buffer_to_screen(server)=======
 			glob.transmit_flag = 0                      # Make sure we don't end up sending several times on top of eachother
 														# Means we must actively set glob.transmit_flag = 1 in outside code
 			transmit_loop.start = time()                # Resetting exceution timer
-			buffer_to_screen(server)
+			buffer_to_screen(server)>>>>>>> .r36
