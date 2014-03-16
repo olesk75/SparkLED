@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-""" Python3 program to connect to an Arduino (server) connected to a LED display via a network socket.
-	The program can either issue command for the Arduino (change brightness, blank screen etc),
+""" Python3 program to connect to an SparkCore (server) connected to a LED display via a network socket.
+	The program can either issue command for the SparkCore (change brightness, blank screen etc),
 	or issue full screen updates (R,G,B values for all LEDs on display).
 
 	The program will in its final form use input from sensors (networked and directly attached) to
@@ -14,13 +14,9 @@ import signal
 from datetime import datetime
 import socket
 from time import sleep
+import requests
 from SuperLED_lib import *
 import SuperLED_data
-
-
-
-IP = "10.0.0.50"    # Must match Arduino IP address TODO: Make Arduino announce its IP address somewhere we can look it up
-PORT = 2208         # Must match Arduino server port
 
 # Global variable definitions
 glob.NUM_LEDS = 256
@@ -28,35 +24,45 @@ glob.DEBUG = 1       # Increase verbosity
 glob.DISPLAY_MODE = 'LED'		# Valid options: 'LED', 'curses', 'tkinter'
 
 
-def initialize(ip_address, port_number):
+def initialize():
 	"""
 	Initializes network connection and returns socket object
 	@rtype : Server object
-	@param ip_address: IP address of Arduino
-	@param port_number: Port number of server running on Arduino
+	@param ip_address: IP address of SparkCore
+	@param port_number: Port number of server running on SparkCore
 	"""
 
 	if glob.DISPLAY_MODE != 'LED': return()     # Only applies if we are using the LED display
 
-	arduino = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	print("- Contacting Arduino server at", ip_address, "on port", port_number)
-
-
+	# Spark Core device ID: 48ff74065067555037201287 and access token: fbc3cd7865c567b740b60543b6adb348d7f76c1f
+	# curl "https://api.spark.io/v1/devices/48ff74065067555037201287/ip?access_token=fbc3cd7865c567b740b60543b6adb348d7f76c1f"
+	IPdict = requests.get('https://api.spark.io/v1/devices/48ff74065067555037201287/ipAddress?access_token=fbc3cd7865c567b740b60543b6adb348d7f76c1f').json()
 	try:
-		arduino.connect((ip_address, port_number))
+		IP = IPdict["result"]
+	except KeyError:
+		print("Couldn't get IP for Spark Core from cloud, aborting...")
+		exit(1)
+
+	print("- Spark Core found at address", IP)
+
+	sparkCore = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	print("- Contacting SparkCore server at", IP, "on port", glob.PORT)
+	try:
+		sparkCore.connect((IP, glob.PORT))
 	except socket.error as error:
 		print("ERROR: Connect failed:", format(error))
 		sys.exit()
-	print("- Connected to Arduino server successfully")
-	arduino.send(b'G')
+	print("- Connected to SparkCore server successfully")
+	glob.connected = True
+	sparkCore.send(b' ')  # Just a friendly wakeup
 
 	while True:
-		if arduino.recv(1) == b'S': break     # We're stuck here until the Arduino sends us the S (start) command
+		if sparkCore.recv(1) == b'S': break     # We're stuck here until the SparkCore sends us the S (start) command
 
 	# Ok, we got 'S' and are ready to start
-	print("- Start code 'S' received from Arduino - ready!")
+	print("- Start code 'S' received from SparkCore - ready!")
 	print("--- INITIALIZATION COMPLETE ---\n")
-	return arduino
+	return sparkCore
 
 
 def scroll_display_buffer(string_length, speed, display_buffer, aa = True):
@@ -131,7 +137,7 @@ def show_img(image, brightness = -1):
 	if not (img.size[0] == img.size[1] == 16):
 		sys.exit("ERROR: Only accept 16x16 images")
 
-	if brightness != - 1: ext_effect(glob.Arduino, 'brightness', brightness)      # The default is to not mess with brightness
+	if brightness != - 1: ext_effect(glob.SparkCore, 'brightness', brightness)      # The default is to not mess with brightness
 
 
 	if 'duration' in img.info:
@@ -282,27 +288,30 @@ if __name__ == "__main__":  # Making sure we don't have problems if importing fr
 	glob.abort_flag = 0                             # True if we want to abort current execution
 	glob.transmit_flag = False                      # No screen updates until requested by a function
 
-	glob.Arduino = initialize(IP, PORT)	            # Connect to Arduino (server) as client
+	glob.sparkCore = initialize()
+
 	signal.signal(signal.SIGINT, signal_handler)    # Setting up th signal handler to arrange tidy exit if manually interrupted
 
-	#ext_effect(glob.Arduino,'hw_test')             # Test LED display using Arduino function
-	#ext_effect(glob.Arduino,'brightness', 128)      # Set LED screen brightness (0-255) using Arduino function (no impact on display_buffer)
-
-	init_thread(transmit_loop, glob.Arduino)        # Starts main transmit thread - to LED if not glob.OFFLINE, curses otherwise
+	init_thread(transmit_loop, glob.sparkCore)           # Starts main transmit thread - to LED if not glob.OFFLINE, curses otherwise
 													# Does nothing until a function sets glob.transmit_flag = True
 
-	ext_effect(glob.Arduino, 'blank')
-	sleep(1)
+	#ext_effect(glob.sparkCore, 'blank')
+
 	#################################################################################################################################################
 	#   This is the main loop - it processes sensor inputs and timers and controls what goes on the display and when                                #
 	#	It never exists unless there is an error.                                                                                                   #
 	#################################################################################################################################################
+
+	counter = 0
+
+	#sleep(3)
 	while True:
+		if not glob.connected: glob.sparkCore = initialize()     # If we loose the connection we try reconnecting
 
 		#clock_digital([255,128,0])
 		#(text_length, text_buffer) = text_to_buffer("Scrolling is fun!?!", 100, 10, 10)   # Put text message in large (16 row high) buffer
 		#init_thread(scroll_display_buffer, text_length, 5, text_buffer)
-		#while True: pass
+		#while True:pass
 		#while True: print("I am free")
 		#clock_digital([128,0,0])
 
@@ -310,8 +319,15 @@ if __name__ == "__main__":  # Making sure we don't have problems if importing fr
 		#effects.active_effect = 'rain'
 
 		#show_img('images/bell.png')
-		#show_img('images/fractal.gif')      # "Cheat" to show colorful fractal using animated gif
-		#while True: show_img('images/ikanim.gif')
+		#sleep(1)
+		#show_img('images/skull.png')
+		#sleep(1)
+		#ext_effect(SparkCore,'hw_test')             # Test LED display using SparkCore function
+		#ext_effect(SparkCore,'brightness', 30)
+		#ext_effect(SparkCore,'hw_test')             # Test LED display using SparkCore function
+
+		while True: show_img('images/fractal.gif')      # "Cheat" to show colorful fractal using animated gif
+		#while True: pass
 
 		#show_img('images/fractal.gif')
 		#sleep(2)
@@ -321,19 +337,6 @@ if __name__ == "__main__":  # Making sure we don't have problems if importing fr
 		#sleep(2)
 		#show_img('images/skull.png')
 		#sleep(2)
-		#show_img('images/242.gif')
+		#show_img('images/ajax_loader_bar.gif')
 
 		#show_img('images/padlock.png')
-
-
-		# Performing manual testing
-		for i in range(256):
-			glob.led_buffer[i] = [0, 255, 0]  # 256 x 3 list
-		glob.transmit_flag = 1
-
-		sleep(1)
-
-		for i in range(256):
-			glob.led_buffer[i] = [255, 0, 0]  # 256 x 3 list
-		glob.transmit_flag = 1
-		sleep(1)

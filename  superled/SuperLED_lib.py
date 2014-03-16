@@ -60,6 +60,7 @@ def anti_alias_left_10(buffer, original_buffer, current_step):      # TODO: Conv
 def convert_buffer():
 	"""
 	Compensates for the display's zigzag pattern of LEDs (if LED active) and returns bytearray()
+	Also changes all 0 1 (still off on LED, but we need the 0 to send control codes)
 	@return: updated RGB led buffer ready to transmit
 	"""
 
@@ -76,7 +77,11 @@ def convert_buffer():
 	# We convert the whole transmit_buffer list into a string of bytes that we can write to curses/Arduino
 	byte_buffer = bytearray()
 
-	for rgb in line_buffer:          # For each led... 256 in total
+	for rgb in line_buffer: # For each led... 256 in total
+		if rgb[0] == 0: rgb[0] = 1      # Zero is reserved for control codes
+		if rgb[0] == 0: rgb[0] = 1
+		if rgb[0] == 0: rgb[0] = 1
+
 		byte_buffer.append(rgb[0])
 		byte_buffer.append(rgb[1])
 		byte_buffer.append(rgb[2])
@@ -132,40 +137,35 @@ def curses_draw(buffer):
 
 # noinspection PyShadowingNames,PyShadowingNames
 def buffer_to_screen(server):
-	try:
-		buffer_to_screen.start
-	except:
-		buffer_to_screen.start = time()
-
-	if time() - buffer_to_screen.start < 0.033:
-		print("DEBUG: TOO FAST UPDATES")
-		return       # We cap transfers at about 30 frames/second
-	buffer_to_screen.start = time()
 
 	if glob.DISPLAY_MODE == 'curses':
 		curses_draw(convert_buffer())
-	elif glob.DISPLAY_MODE == 'tkinter':
-		tk_draw(convert_buffer())
+
 	else:		# We default to LED - meaning we normally use this function to update the LED display - tkinter/curses is for debugging mostly
 		if server.send(b'G') != 1:
 			print("- Go code 'G' failed")
-			sys.exit("Unable to send go code to Arduino")
-		response = server.recv(1)
-		if response != b'A':
-			print("- Go code NOT acknowledged by Arduino - aborting...")
-			sys.exit()
+			sys.exit("Unable to send go code to Spark Core")
+		# response = server.recv(1)
+		# if response != b'A':
+		# 	print("- Go code NOT acknowledged by Arduino - aborting...")
+		# 	sys.exit()
 
 		#for n in convert_buffer():
 		#	print(n);
 		#	server.send(bytes(n))
-		print("Sent bytes: ", server.sendall(convert_buffer()))
+		server.sendall(convert_buffer())
 
+		while True:
+			glob.transmit_flag = False
+			if server.recv(1) == b'D': break
+
+		#print("ACK from Spark Core")
 
 		if glob.DEBUG:
 			print("Display updates:\033[1m", buffer_to_screen.updates, "\033[0m", end='\r')
 			buffer_to_screen.updates += 1
 
-		while server.recv(1) != b'R': pass
+		# while server.recv(1) != b'R': pass
 
 		#response = server.recv(1)
 
@@ -240,41 +240,24 @@ def ext_effect(server, effect, effect_value = None):
 	if effect == 'hw_test': hw_effect = b'T'
 	if effect == 'blank': hw_effect = b'Z'
 
-	#if glob.DEBUG: print("\n---> Changing", effect, "to", effect_value, "!")
+	if glob.DEBUG: print("\n---> Performing", effect)
 
 	if glob.DISPLAY_MODE == 'LED':
 		if server.send(hw_effect) != 1:
 			print("- Sending of effect code,", hw_effect, "failed")
 			sys.exit()
 
-		response = server.recv(1)
-
-		if response == b'A':
-			if glob.DEBUG: print("Arduino >>", effect, "command acknowledged!")
-		else:
-			print("- Effect code", effect, " (code: ", hw_effect, ") NOT acknowledged by Arduino - aborting...")
-			sys.exit()
 
 		if effect_value:    # Could be None
 			value_string = bytes([effect_value])
-			print(value_string)
+			#print(value_string)
 			server.send(value_string)       # Send the 3 digits as bytes
 
-			response = server.recv(1)
-			if response == b'A':    # Value acknowledged
-				if glob.DEBUG: print("Arduino >>", effect, "value acknowledged!")
-			if response == b'E':    # Error reported by Arduino
-					print("Arduino >> ERROR: value not received")
-					sys.exit()
-			if response == -1:      # Unable to send value to Arduino
-				print("ERROR: Nothing read from Arduino")
-				sys.exit()
-
-		# Since some of these effects can take some time, we wait here until we get 'D'one from the Arduino
+		# Since some of these effects can take some time, we wait here until we get 'D'one from the Spark Core
 		while True:
 			if server.recv(1) == b'D': break
 
-		print("Arduino >> Effect completed successfully")
+		print("- Spark Core reports effect completed successfully")
 
 
 def get_line(x1, y1, x2, y2):
@@ -410,9 +393,11 @@ def rgb_set_brightness(rgb_values, brightness):
 
 # noinspection PyUnusedLocal,PyUnusedLocal,PyShadowingNames
 def signal_handler(signal, frame):
+	glob.transmit_flag = False
 	print('- Interrupted manually, aborting')
-	ext_effect(glob.Arduino, 'blank')
-	if glob.DISPLAY_MODE == 'LED': glob.Arduino.close()
+	ext_effect(glob.sparkCore, 'blank')
+	glob.sparkCore.send(b'Q')     # Telling Spark Core to hang up connection
+	if glob.DISPLAY_MODE == 'LED': glob.sparkCore.close()
 	if glob.DISPLAY_MODE == 'curses': curses.endwin()
 	if glob.DISPLAY_MODE == 'tkinter': pass
 	sys.exit(0)
@@ -519,14 +504,50 @@ def text_to_buffer(display_text, red, green, blue):
 	return len(display_text), display_buffer
 
 
-def transmit_loop(server):  # TODO: Implement timer that checks for minimum intervall between transmissons
+def transmit_loop(server):  # TODO: Reinitialize the connection if the keep-alive is not ack'ed by the Spar Core
 	"""
 	The main LED update loop that runs perpetually.
+
+	An important aspect is the transmit_loop.start variable, which is a local persistent variable that counts the seconds between each execution
+	This allows us to cap the frame rate in order to avoid drowning the Spark Core in requests.
+	Similarly the transmit_loop.idle variable checks how long since we last transmitted something, and if the time is more that 10 seconds, we
+	send a keep-alive to the Spark Core to avoid a network timeout.
+
 	"""
 	while True:
 		if type(glob.led_buffer[0][0]) is not int: glob.transmit_flag = 0     # We skip if the glob.led_buffer is not ready yet
 
+		try: transmit_loop.start                        # Time since last iteration (persistent variable)
+		except: transmit_loop.start = time()            # First iteration, assigning curent time to variable
+
+		try: transmit_loop.idle                         # Time since last trasnmission (persistent variable)
+		except: transmit_loop.idle = time()            # First iteration, assigning curent time to variable
+
+		if time() - transmit_loop.start < 0.033:        # We cap transfers at about 30 frames/second
+			print("DEBUG: Too quick. Time elapsed since last: " + str('{0:.10f}'.format(time() - transmit_loop.start)))
+			glob.transmit_flag = 0                      # We simply avoid calling buffer_to_screen() until enough time has passed
+			transmit_loop.start = time()                    # Resetting exceution timer
+
+		if time() - transmit_loop.idle > 10:            # We have been idle for 10 seconds or more
+			print("DEBUG: Idle for 10 seconds, sending keep-alive to Spark Core")
+			server.send(b'K')                           # Sending keepalive
+			while True:                                 # We keep trying until either: conection breaks or connection times out or we get a 'D' response
+				try: answer = server.recv(1)
+				except ConnectionResetError:
+					print("DEBUG: Lost connection")
+					glob.connected = False
+					glob.transmit_flag = 0
+					break
+				if time() - transmit_loop.idle > 15:    # We haven't received an acknowledge for 5 seconds (10 + 5)
+					print("ERROR: Connection with Spark Core timed out")
+					glob.connected = False
+					glob.transmit_flag = 0
+				if answer == b'D': break
+				transmit_loop.idle = time()                 # Resetting idle timer every time we send a screen update
+
+
 		if glob.transmit_flag:
-			glob.transmit_flag = 0   # Make sure we don't end up sending several times on top of eachother
-								# Means we must actively set glob.transmit_flag = 1 in outside code
+			glob.transmit_flag = 0                      # Make sure we don't end up sending several times on top of eachother
+														# Means we must actively set glob.transmit_flag = 1 in outside code
+			transmit_loop.start = time()                # Resetting exceution timer
 			buffer_to_screen(server)

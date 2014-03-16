@@ -6,13 +6,16 @@
 # Global variables
 transmit_flag = False
 abort_flag = None
+connected = False
 
 DISPLAY_MODE = 'LED'  # One of 'curses', 'LED' or 'tkinter' - defaults to 'LED'
 OFFLINE = None
 DEBUG = False
 NUM_LEDS = None
 
-Arduino = ''    # The socket object that holds the connection to the Arduino
+sparkCore = None
+
+PORT = 2208     # Port number for Spark Core
 
 settings = {
 	'OFFLINE': False,
