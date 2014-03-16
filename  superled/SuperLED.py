@@ -21,7 +21,7 @@ import SuperLED_data
 # Global variable definitions
 glob.NUM_LEDS = 256
 glob.DEBUG = 1       # Increase verbosity
-glob.DISPLAY_MODE = 'LED'               # Valid options: 'LED', 'curses', 'tkinter'
+glob.DISPLAY_MODE = 'LED'               # Valid options: 'LED' and 'curses'
 
 
 def initialize():

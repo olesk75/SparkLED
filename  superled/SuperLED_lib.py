@@ -6,7 +6,6 @@
 """
 import curses
 import threading
-from tkinter import *
 from PIL import Image
 import colorsys
 from copy import deepcopy
@@ -141,7 +140,7 @@ def buffer_to_screen(server):
         if glob.DISPLAY_MODE == 'curses':
                 curses_draw(convert_buffer())
 
-        else:           # We default to LED - meaning we normally use this function to update the LED display - tkinter/curses is for debugging mostly
+        else:           # We default to LED - meaning we normally use this function to update the LED display - curses is for debugging mostly
                 if server.send(b'G') != 1:
                         print("- Go code 'G' failed")
                         sys.exit("Unable to send go code to Spark Core")
@@ -399,49 +398,7 @@ def signal_handler(signal, frame):
         glob.sparkCore.send(b'Q')     # Telling Spark Core to hang up connection
         if glob.DISPLAY_MODE == 'LED': glob.sparkCore.close()
         if glob.DISPLAY_MODE == 'curses': curses.endwin()
-        if glob.DISPLAY_MODE == 'tkinter': pass
         sys.exit(0)
-
-
-def tk_draw(buffer):        # TODO: Rebuild with canvas http://www.tutorialspoint.com/python/tk_canvas.htm
-        print("DEBUG: drawing in tk")
-        glob.transmit_flag = 0
-
-        pixel_multiplier = 50
-
-        width, height = 16 * pixel_multiplier, 16 * pixel_multiplier
-
-        root = Tk()
-
-        img = PhotoImage(width=width, height=height)
-
-        x = 0
-        y = 0
-        #color = [str] * 16 * 16
-
-
-
-        print("len(buffer)", len(buffer))
-        for n in range(0, int(len(buffer)), 3):
-                for inner_y in range(pixel_multiplier):
-                        for inner_x in range(pixel_multiplier):
-                                hex_code = "#%02x%02x%02x" % (buffer[n + 0],buffer[n + 1],buffer[n + 2])
-                                img.put(hex_code, (x + inner_x, y + inner_y))
-
-                x += pixel_multiplier
-                if x == 16 * pixel_multiplier:
-                        x = 0
-                        y += pixel_multiplier
-
-
-
-                #img.put("#ffffff", (x//4,y))
-
-
-        label = Label(root, image=img, bg="#000000")
-        label.grid()
-        root.mainloop()
-
 
 def text_to_buffer(display_text, red, green, blue):
         """
