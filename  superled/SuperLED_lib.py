@@ -86,12 +86,9 @@ def convert_buffer():
             if rgb[1] == 0: rgb[1] = 1
             if rgb[2] == 0: rgb[2] = 1
 
-            """
-                NOTE: The current set of the Adafruit NeoPixel is NOT set up with R,G,B, with with G, R, B! (I know!!) RGB would be too easy
-            """
 
-            byte_buffer.append(rgb[1])  # Green
             byte_buffer.append(rgb[0])  # Red
+            byte_buffer.append(rgb[1])  # Green
             byte_buffer.append(rgb[2])  # Blue
 
     return byte_buffer

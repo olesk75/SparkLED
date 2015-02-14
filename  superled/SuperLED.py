@@ -34,7 +34,7 @@ def initialize():
 
     IP = "10.0.0.74"  # TODO: Make call  curl "https://api.spark.io/v1/devices/ DEVICEID /localIP?access_token= ACCESS TOKEN"
     # For use with emulator only:
-    #IP = "127.0.0.1"
+    IP = "127.0.0.1"
 
     SparkCore = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     SparkCore.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # Important in Windows to not block sockets (at least it is on a TCP server, not sure about client)
@@ -66,7 +66,7 @@ def initialize():
         exit(1)
 
 
-    print("- Acknowledgement (b'A') received from Arduino via SparkCore - ready!")
+    print("- Acknowledgement (b'A') received from SparkCore - ready!")
     print("--- INITIALIZATION COMPLETE ---\n")
 
     return SparkCore
