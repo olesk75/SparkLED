@@ -20,10 +20,18 @@
 #define COLOR_BYTES 3		// 3 bytes required per led for full color
 #define BUFFER_SIZE 768
 #define DATA_PIN 6			// Pin on the Arduino used to communicate with LED display
+							// For the status lights.
+#define RED 0				// RED : no contact with Spark Core
+#define ORANGE 1			// YELLOW: serial open
+#define GREEN 2				// GREEN: serial connection established
+
 
 
 #define BAUD_RATE0 115200	// For logging
-#define BAUD_RATE1 400000	// For data
+#define BAUD_RATE1 230400	// For data - we should try 1'000'000 - supposed to work!
+							// 400000 does work, but with some corruptions - possibly *not* due to serial?
+							// TO solve corruption issue, try scaling back to 115200
+							// OR, try 230400 which should be the sweet spot really (30fps)
 
 CRGB leds[NUM_LEDS];		// FastLED class with .r .g and .b for each pixel - size: 3 bytes * NUM_LEDS
 uint8_t command;			// the command character we get from serial/WiFi	
@@ -34,19 +42,21 @@ boolean firstRun = true;
 void setup() {
 	Serial.begin(BAUD_RATE0);								// initializing serial communication for debugging
 	Serial.println(F("-> ARDUINO LEDSLAVE LIVE AGAIN!"));
-	Serial.print(F("-> Free memory = ")); Serial.print(freeMemory()); Serial.println(" bytes");
 	FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);	// setting up pin 6 and the array 'leds' to work with FastLED library
 	Serial.println(F("-> FastLED library enabled"));
-	Serial1.begin(BAUD_RATE1);								// initializing serial communication for data
-	Serial.println(F("-> Serial data communication enabled"));
 	Serial.println(F("-> Showing boot screen"));
 	boot_screen();											// showing boot screen to show we're alive
 	LEDS.setBrightness(128);
+	traffic_light(RED);
+	Serial1.begin(BAUD_RATE1);								// initializing serial communication for data
+	Serial.println(F("-> Serial data communication enabled"));
 	Serial.println(F("-> Running main loop"));
+	traffic_light(ORANGE);
 }
 
 void loop() { 
 
+	
 	delay(10);
 
   	while(!Serial1.available());	// Wait here until we have serial traffic
@@ -54,6 +64,13 @@ void loop() {
 	while(!Serial1.available());	// Wait here until we have serial traffic
     command = Serial1.read();		// Read the actual command
     
+    if(firstRun) {
+		traffic_light(GREEN);
+		firstRun = false;
+		Serial.println(F("-> Serial contact with Spark Core established"));
+		Serial.print(F("-> Command received: "));
+		Serial.println(command);
+		}
     /* DEBUG
     if (command > 65 && command < 90) {	// ASCII
     	Serial.print((char) command); 
@@ -211,3 +228,24 @@ void fill_screen(CRGB color) {
 	FastLED.show();
 }
 
+void traffic_light(uint8_t status) {
+	if (status == RED) {
+		for(uint8_t y = 0; y < 5; y++)
+			for (uint8_t x = 6; x < 11; x++)
+				leds[y*16 + x] = CRGB(255,0,0);
+	}
+	
+	if (status == ORANGE) {
+		for(uint8_t y = 6; y < 11; y++)
+			for (uint8_t x = 6; x < 11; x++)
+				leds[y*16 + x] = CRGB(255,165,0);
+	}
+				
+	if (status == GREEN) {
+		for(uint8_t y = 12; y < 16; y++)
+			for (uint8_t x = 6; x < 11; x++)
+				leds[y*16 + x] = CRGB(0,255,0);
+	}
+				
+	FastLED.show();
+}

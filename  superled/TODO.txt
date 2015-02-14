@@ -1,7 +1,6 @@
 SuperLED TODO
 
--   At 400'000 baud rate, we get 20fps from Spark Core to Arduino under ideal conditions without WiFi - we need to send buffers.
-	Try with 256B per send. If that doesn't work, reduce until it does.
+-   Use Spyrk libary to get core address automatically
 
 -   Increase robustness. Code must work if Arduino LED slave, Spark Core or Python client disconnects and reconnects at random times.
 	Timer interrupts to disconnect wifi clients? Aborts of buffer read on Arduino?

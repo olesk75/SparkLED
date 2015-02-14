@@ -8,14 +8,13 @@ transmit_flag = False
 abort_flag = None
 connected = False
 
-DISPLAY_MODE = 'LED'  # One of 'curses', 'LED' or 'tkinter' - defaults to 'LED'
 OFFLINE = None
-DEBUG = False
+DEBUG = True
 NUM_LEDS = None
 
 sparkCore = None
 
-PORT = 2208     # Port number for Spark Core
+PORT = 2208     # Port number for rasberryPI
 
 settings = {
 	'OFFLINE': False,
