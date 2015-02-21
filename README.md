@@ -21,3 +21,11 @@ Just a few simple steps to get it to work:
 3. Run SuperLED.py to test, and tweak __main__ in SuperLED to include the animations/scrollers/images you want
 
 **Note:** You can test this script without a LED display or SparkCore by running the [led_server_emulator.py](https://github.com/olesk75/SuperLED/blob/master/%20superled/led_server_emulator.py) script. Just rememer to set the IP address in *serverIP* in the initialize() function in SuperLED.py to 127.0.0.1 (localhost) if you run both SuperLED and the emulator on the same machine
+
+**Also note**: It is my intention to automatically find the IP adress of the Spark Core using the [Spyrk](https://github.com/Alidron/spyrk) library, though this is not complete. It needs some data in a file called config.py, two lines to be exact, like so:
+```
+DEVICEID = '555555555555555555555555'
+ACCESS_TOKEN = '6666666666666666666666666666666666666666'
+```
+
+Both deviceid and access token can be found at [spark.io](spark.io).
