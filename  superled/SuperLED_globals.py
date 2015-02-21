@@ -31,3 +31,10 @@ for i in range(256):
 	transmit_buffer[i] = [None] * 3
 
 
+### Test project - going OOP
+class SuperLED:
+	def setdata(self, value):
+		self.data = value
+
+	def display(self):
+		print(self.data)
