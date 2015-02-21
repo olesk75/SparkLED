@@ -45,9 +45,12 @@ TCPServer server = TCPServer(2208);
 TCPClient client;
 char myIpAddress[24];
 bool connected;
+bool blankFlag;
 
 uint8_t readBuffer[2];
 int readStatus;
+
+long idleTimer;
 
 void setup() 
 {
@@ -65,6 +68,8 @@ void setup()
     IPAddress myIp = WiFi.localIP();
     sprintf(myIpAddress, "%d.%d.%d.%d", myIp[0], myIp[1], myIp[2], myIp[3]);
 
+    idleTimer = millis();
+    blankFlag = false;
 }
 
 
@@ -74,9 +79,15 @@ void loop()
     
     client = server.available();
     
+    if(millis() - idleTimer > 20000 && !blankFlag) {
+        boot_screen(); // if no connection in 20 seconds we blank the display
+        blankFlag = true;
+    }
+    
     if (client.connected()) {
-        
+           
         connected = true;
+        blankFlag = false;
         
         // TODO: Check if we can get out of sync here, reading the two bytes backwards
         while ( readBuffer[0] != 0x00 ||    // where the first one is 0x00...
@@ -152,6 +163,7 @@ int readByte(uint8_t *destination, int bytesRead) {
         client.stop();
         connected = false;
         Spark.process();
+        idleTimer = millis();
         
     }
     return(statusCode);
