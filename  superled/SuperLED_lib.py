@@ -159,21 +159,6 @@ def effects():
             transmit_buffer[line * 16:line * 16 + 16] = glob.line_buffer[0:16]
 
 
-    if effects.active_effect == 'rain':     # Makes the screen "rain away"
-            effects.iterations = 14
-            effects.random_pixels = random.sample(range(16), 16)    # Randomly ordered pixels
-            line = 14 - effects.progress    # We start with the seond line from the bottom
-            for x in effects.random_pixels:
-                    color = get_pixel(x, line)      # From led_buffer
-                    transmit_buffer[x + (line + 1) * 16] = color
-                    transmit_buffer[x + line * 16] = [0x00, 0x00, 0x00]
-
-    else: effects.iterations = 0
-
-    if effects.progress == effects.iterations:
-            effects.progress = 0    # We're done, making ready for another run/effect
-            effects.active_effect = 'none'
-    else: effects.progress += 1
 
     #
     # Finally, we convert the whole transmit_buffer list into a string of bytes that we can write to curses/Arduino

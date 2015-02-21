@@ -10,6 +10,9 @@
         Some additional global variables are found in and imported from SuperLED_globals.py
         The font and image data are store in and imported from SuperLED_data.py
 """
+from config import *    # This is the config file with your Spark Core variables, DEVICEID and ACCESS_TOKEN
+from spyrk import SparkCloud
+
 import signal
 import sys
 from datetime import datetime
@@ -32,23 +35,30 @@ def initialize():
     @param port_number: Port number of server running on Spark Core
     """
 
-    IP = "10.0.0.74"  # TODO: Make call  curl "https://api.spark.io/v1/devices/ DEVICEID /localIP?access_token= ACCESS TOKEN"
+    #spark = SparkCloud(ACCESS_TOKEN)
+
+    #serverIP = spark.devices[DEVICEID].localIP
+
+    #print(serverIP)
+
+
+    serverIP = "10.0.0.74"  # TODO: Make call  curl "https://api.spark.io/v1/devices/ DEVICEID /localIP?access_token= ACCESS_TOKEN"
     # For use with emulator only:
-    IP = "127.0.0.1"
+    #serverIP = "127.0.0.1"
 
     SparkCore = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     SparkCore.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # Important in Windows to not block sockets (at least it is on a TCP server, not sure about client)
 
 
 
-    print("- Contacting Spark Core server at", IP, "on port", glob.PORT)
+    print("- Contacting Spark Core server at", serverIP, "on port", glob.PORT)
     try:
         SparkCore.settimeout(10)
-        SparkCore.connect((IP, glob.PORT))
+        SparkCore.connect((serverIP, glob.PORT))
     except socket.error as error:
         print("ERROR: Connect failed:", format(error))
         exit(1)
-    print("- Connected to Spark CoreI server successfully")
+    print("- Connected to Spark Core server successfully")
 
     SparkCore.settimeout(5) # No reason why it should take anywhere near even a second once connection is established
 
@@ -110,8 +120,7 @@ def scroll_display_buffer(string_length, speed, display_buffer, aa=True):
 
             if aa:
                 glob.led_buffer_original = glob.led_buffer[:]  # We need to pass the unchanged buffer as well
-                for anti_alias_step in range(
-                        10):  # We now anti-alias scroll everything one pixel to the left to make it smooth, in 10 steps
+                for anti_alias_step in range(10):  # We now anti-alias scroll everything one pixel to the left to make it smooth, in 10 steps
                     glob.led_buffer = anti_alias_left_10(glob.led_buffer, glob.led_buffer_original, anti_alias_step)
 
                     glob.transmit_flag = True  # We send the intermediate step to the screen
@@ -289,8 +298,6 @@ def clock_digital(color):
 
 if __name__ == "__main__":  # Making sure we don't have problems if importing from this file as a module
 
-    effects.active_effect = 'none'  # Static variable that contains the active effect - stays between function calls
-    effects.progress = 0  # Static variable that measures the progress of the active effect - stays between function calls
     buffer_to_screen.updates = 0  # We need to set this variable AFTER the function definition
     glob.abort_flag = 0  # True if we want to abort current execution
     glob.transmit_flag = False  # No screen updates until requested by a function
@@ -299,11 +306,10 @@ if __name__ == "__main__":  # Making sure we don't have problems if importing fr
 
     # signal.signal(signal.SIGINT, signal_handler)  # Setting up th signal handler to arrange tidy exit if manually interrupted
 
-    init_thread(transmit_loop,
-                glob.sparkCore)  # Starts main transmit thread - to LED if not glob.OFFLINE, curses otherwise
+    init_thread(transmit_loop, glob.sparkCore)  # Starts main transmit thread - to LED if not glob.OFFLINE, curses otherwise
     # Does nothing until a function sets glob.transmit_flag = True
 
-    # ext_effect(glob.sparkCore, 'blank')
+    ext_effect(glob.sparkCore, 'brightness', 255)
 
     #################################################################################################################################################
     #   This is the main loop - it processes sensor inputs and timers and controls what goes on the display and when                                #
@@ -316,11 +322,11 @@ if __name__ == "__main__":  # Making sure we don't have problems if importing fr
 
         #clock_digital([255,128,0])
 
-
-        #(text_length, text_buffer) = text_to_buffer("Scrolling is fun!?!", 100, 10, 10)  # Put text message in large (16 row high) buffer
-        #init_thread(scroll_display_buffer, text_length, 2, text_buffer, True)
-        #while True: pass        # NOTE: If you do not stop it here, there will be 1000000 scrollers on top of each other!!!
-
+        """
+        (text_length, text_buffer) = text_to_buffer("Scrolling is fun!?!", 100, 10, 10)  # Put text message in large (16 row high) buffer
+        init_thread(scroll_display_buffer, text_length, 10, text_buffer, True)
+        while True: pass        # NOTE: If you do not stop it here, there will be 1000000 scrollers on top of each other!!!
+        """
 
         #while True: print("I am free")
         #clock_digital([128,0,0])
@@ -331,13 +337,13 @@ if __name__ == "__main__":  # Making sure we don't have problems if importing fr
 
         #ext_effect(glob.sparkCore,'hw_test')             # Test LED display using SparkCore function
         #sleep(1)
-        show_img('images/sunmoon.gif')  #ext_effect(glob.sparkCore,'hw_test')             # Test LED display using SparkCore function
+        #show_img('images/sunmoon.gif')  #ext_effect(glob.sparkCore,'hw_test')             # Test LED display using SparkCore function
         #sleep(5)
         #print("SHOWING IMAGE(s)")
         #show_img('images/bell.png')
         #show_img('images/Bubble.gif')
 
-        #ext_effect(glob.sparkCore,'hw_test')             # Test LED display using SparkCore function
+        ext_effect(glob.sparkCore,'hw_test')             # Test LED display using SparkCore function
         #while True: pass
         sleep(0)
         #while True: show_img('images/skull.png')
@@ -346,7 +352,8 @@ if __name__ == "__main__":  # Making sure we don't have problems if importing fr
         #ext_effect(SparkCore,'brightness', 30)
         #ext_effect(SparkCore,'hw_test')             # Test LED display using SparkCore function
 
-        #show_img('images/fractal.gif')      # "Cheat" to show colorful fractal using animated gif
+        show_img('images/fractal.gif')      # "Cheat" to show colorful fractal using animated gif
+        ext_effect(glob.sparkCore,'brightness', 30)
         #show_img('images/ajax_loader_bar.gif')
         #while True: pass
 

@@ -29,3 +29,5 @@ for i in range(256):
 transmit_buffer = [None] * 256  # We need this copy of the led_buffer to avoid overwriting while we do effects and prepare to transmit the data
 for i in range(256):
 	transmit_buffer[i] = [None] * 3
+
+

@@ -74,7 +74,6 @@ while True: # main game loop
             s.settimeout(2)
             displayUpdates = 0      # resetting counter
 
-
         if len(data) == 768:
             #print("Got full screen update (768) bytes)", end='')
 
@@ -103,11 +102,13 @@ while True: # main game loop
             start = time.clock()    # resetting timer
             displayUpdates += 1
 
-
         else:
             print("ERROR: Expected 768 bytes of data, got ", len(data))
             print("Data received: ", data)
 
+    elif data == b'\x00B':
+        print("Got brightness request - ignoring")
+        conn.send(b'D')     # We are Done!
 
     else:
         print("Got malformed data, exiting: ", data)
