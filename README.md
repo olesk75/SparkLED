@@ -16,7 +16,7 @@ This is a client/server suite for controlling a LED display.
 Just a few simple steps to get it to work:
 
 - Get a Spark Core and wire it up to your LED display. Some [instructions here](https://community.spark.io/t/adafruit-neopixel-library-ported/1143/160), but don't get confused by mentions of the Neopixel library. We will use FastLED instead - it's significantly more feature rich and faster.
-- Flash the SparkLED.ino file to your Spark Core ([and find it's IP address](http://blog.spark.io/2014/03/11/spark-publish/))
+- Flash the [SparkLED.ino file](https://github.com/olesk75/SuperLED/blob/master/%20superled/SparkCore/SparkLED.ino) to your Spark Core ([and find it's IP address](http://blog.spark.io/2014/03/11/spark-publish/))
 - Replace my internal IP address in *serverIP* in the initialize() function in SuperLED.py with yours
 - Run SuperLED.py to test, and tweak __main__ in SuperLED to include the animations/scrollers/images you want
 
