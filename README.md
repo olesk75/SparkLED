@@ -16,11 +16,11 @@ This is a client/server suite for controlling a LED display.
 Just a few simple steps to get it to work:
 
 1. Get a Spark Core and wire it up to your LED display. Some [instructions here](https://community.spark.io/t/adafruit-neopixel-library-ported/1143/160), but don't get confused by mentions of the Neopixel library. We will use FastLED instead - it's significantly more feature rich and faster. Alternatively, skip both LEDs and Spark Core (see below)
-2. Flash the [SparkLED.ino file](https://github.com/olesk75/SuperLED/blob/master/%20superled/SparkCore/SparkLED.ino) to your Spark Core ([and find it's IP address](http://blog.spark.io/2014/03/11/spark-publish/))
-- Replace my internal IP address in *serverIP* in the initialize() function in [SuperLED.py](https://github.com/olesk75/SuperLED/blob/master/%20superled/SuperLED.py) with yours
+2. Flash the [SparkLED.ino file](https://github.com/olesk75/SuperLED/blob/master/SparkCore/SparkLED.ino) to your Spark Core ([and find it's IP address](http://blog.spark.io/2014/03/11/spark-publish/))
+- Replace my internal IP address in *serverIP* in the initialize() function in [SuperLED.py](https://github.com/olesk75/SuperLED/blob/master/SuperLED.py) with yours
 3. Run SuperLED.py to test, and tweak __main__ in SuperLED to include the animations/scrollers/images you want
 
-**Note:** You can test this script without a LED display or SparkCore by running the [led_server_emulator.py](https://github.com/olesk75/SuperLED/blob/master/%20superled/led_server_emulator.py) script. Just rememer to set the IP address in *serverIP* in the initialize() function in SuperLED.py to 127.0.0.1 (localhost) if you run both SuperLED and the emulator on the same machine
+**Note:** You can test this script without a LED display or SparkCore by running the [led_server_emulator.py](https://github.com/olesk75/SuperLED/blob/master/Tools/led_server_emulator.py) script. Just rememer to set the IP address in *serverIP* in the initialize() function in SuperLED.py to 127.0.0.1 (localhost) if you run both SuperLED and the emulator on the same machine
 
 **Also note**: It is my intention to automatically find the IP adress of the Spark Core using the [Spyrk](https://github.com/Alidron/spyrk) library, though this is not complete. It needs some data in a file called config.py, two lines to be exact, like so:
 ```
