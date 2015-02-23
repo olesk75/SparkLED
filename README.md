@@ -1,4 +1,4 @@
-SuperLED
+##SuperLED
 
 This is a client/server suite for controlling a LED display. 
 
