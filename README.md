@@ -13,7 +13,7 @@ This is a client/server suite for controlling a LED display.
 
 **"SuperLED" scripts**: python client that connects to the Spark Core over wifi and sends commands and animations/pictures for it to display on the LED display
 
-**FastLED**: [FastLED](http://fastled.io) is an excellent library for controlling a range of LED strips and displays. Using the [Spark Core branch](https://github.com/FastLED/FastLED/tree/sparkcore)
+**FastLED**: [FastLED](http://fastled.io) is an excellent library for controlling a range of LED strips and displays. For now, using the [Spark Core branch](https://github.com/FastLED/FastLED/tree/sparkcore) until it gets merged into master
 
 ## How does it work?
 Just a few simple steps to get it to work:
