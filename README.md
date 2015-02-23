@@ -4,6 +4,9 @@ This is a client/server suite for controlling a LED display.
 
 
 ## Main components
+
+![Diagram](https://github.com/olesk75/SuperLED/blob/gh-pages/illustrations/setup.png)
+
 **LED display** : array ([16x16 in my case](http://rgb-123.com/product/1616-16-x-16-rgb-led-matrix/)) of Neopixel WS2812B RGB leds
 
 **Spark Core**: The [Spark Core](http://spark.io) is a wifi and cloud enabled development platform that controls the leds and acts as server, programmed in C (Arduino)
