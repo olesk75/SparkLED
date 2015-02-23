@@ -1,4 +1,4 @@
-    #SparkLED
+    SparkLED - C code for the Spark Core LED-connected TCP server
     
     This program is intended to run on the original Spark Core and uses the FastLED library.
     Its purpose it to run a minimal TCP server, which listens for connections that provides
