@@ -1,4 +1,4 @@
-""" This file contains font and image data used in the SuperLED project
+""" This file contains font and image data used in the SparkLED project
 """
 
 # 16x16 font, 2 bytes per line for each character, needs unwrapping into [r,g,b] triplet
@@ -147,7 +147,7 @@ font5x5 = bytes([
 	0x00,0x7c,0x44,0x7c,0x04,0x7c,0x00,0x00,  # 9
 ])
 
-# Simply and extrmely tiny 3x5 numerical font
+# Simply and extremely tiny 3x5 numerical font
 numfont3x5 = bytes([
 	0x7, 0x5, 0x5, 0x5, 0x7, # 0
 	0x2, 0x6, 0x2, 0x2, 0x7, # 1
