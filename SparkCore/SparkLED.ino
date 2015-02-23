@@ -5,26 +5,6 @@
     Its purpose it to run a minimal TCP server, which listens for connections that provides
     it with data to display on a 16x16 LED matrix.
     
-    The incoming data format is 0x00 followed by a command code (both bytes). If the command
-    code is 'G' ("go code"), the next 768 bytes is expected to be red, green and blue byte
-    triplets for each of the 256 leds (or "screen pixels").
-    
-    Other command codes can be used to trigger actions on the LED matric, such as setting 
-    brightness, blank display etc.
-    
-    The program tries to be robust in assuming that the connection can break at any time.
-    
-    The key issue to watch is speed. If the network read loop is not fast enough when reading
-    a "screenfull" (768 bytes), we will not be able to maintain a framerate fast enough for
-    animations. 
-    
-    For this program to do anything useful, it must be paired with a client - in this case
-    "SuperLED" - a python client that feeds this program with data.
-    
-    The IP-adress of the Spark Core, can be found manually using curl as follows:
-    curl "https://api.spark.io/v1/devices/ DEVICEID /localIP?access_token= ACCESS TOKEN"
-    where DEVICEID and ACCESS TOKEN are availble at the spark.io web site.
-    
 */
 
 
@@ -87,7 +67,7 @@ void loop()
     if (client.connected()) {
            
         connected = true;
-        blankFlag = false;
+        blankFlag = false; 
         
         // TODO: Check if we can get out of sync here, reading the two bytes backwards
         while ( readBuffer[0] != 0x00 ||    // where the first one is 0x00...
@@ -152,7 +132,7 @@ void loop()
 */
 int readByte(uint8_t *destination, int bytesRead) {
     long startTime = millis();
-    while(!client.available() && millis() - startTime < 1000) 
+    while(!client.available() && millis() - startTime < 3000) // we include a 3 second timeout period, after which we assume the connection broke
         Spark.process();
     
     int statusCode = client.read((uint8_t *) destination, bytesRead);
