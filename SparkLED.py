@@ -6,9 +6,9 @@
         The program will in its final form use input from sensors (networked and directly attached) to
         generate messages on the LED (doorbell, temperature sensors, clock, sound etc.).
 
-        All supporting functions can be found in and are imported from SuperLED.lib
-        Some additional global variables are found in and imported from SuperLED_globals.py
-        The font and image data are store in and imported from SuperLED_data.py
+        All supporting functions can be found in and are imported from SparkLED.lib
+        Some additional global variables are found in and imported from SparkLED_globals.py
+        The font and image data are store in and imported from SparkLED_data.py
 """
 from config import *    # This is the config file with your Spark Core variables, DEVICEID and ACCESS_TOKEN
 from spyrk import SparkCloud
@@ -19,8 +19,8 @@ from datetime import datetime
 import socket
 from time import sleep
 import requests
-from SuperLED_lib import *
-import SuperLED_data
+from SparkLED_lib import *
+import SparkLED_data
 
 # Global variable definitions
 glob.NUM_LEDS = 256
@@ -204,7 +204,7 @@ def clock_digital(color):
     @return:
     """
 
-    font_tiny = list(SuperLED_data.numfont3x5)
+    font_tiny = list(SparkLED_data.numfont3x5)
     black = [0, 0, 0]
 
     n = [None] * 10
