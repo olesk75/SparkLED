@@ -1,8 +1,8 @@
-""" This module contains all the supporting functions for SuperLED.py.
+""" This module contains all the supporting functions for SparkLED.py.
         Only functions that create the final effects for the LED display remain
-        in SuperLED.py, the rest goes here.
-        Some additional global variables are found in and imported from SuperLED_globals.py
-        The font and image data are store in and imported from SuperLED_data.py
+        in SparkLED.py, the rest goes here.
+        Some additional global variables are found in and imported from SparkLED_globals.py
+        The font and image data are store in and imported from SparkLED_data.py
 """
 import curses
 import threading
@@ -12,8 +12,8 @@ import socket
 from copy import deepcopy
 from time import sleep, time
 import random
-import SuperLED_globals as glob
-import SuperLED_data
+import SparkLED_globals as glob
+import SparkLED_data
 from sys import exit
 
 
@@ -362,7 +362,7 @@ def text_to_buffer(display_text, red, green, blue):
     @param blue: blue value (0-255)
     """
 
-    font = SuperLED_data.font1
+    font = SparkLED_data.font1
 
     # We "cheat" by adding a padding space at the beginning and end, which will allow us to smoothly scroll the last letter off the screen
     # with a 16x16 font and the first onto the screen
