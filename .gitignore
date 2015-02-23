@@ -33,6 +33,8 @@ config.py
 report.txt
 images
 .idea
+Support
+*.pptx
 
 
 ### Python template
