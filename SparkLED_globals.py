@@ -1,4 +1,4 @@
-""" This file contains global variables used in the SuperLED project
+""" This file contains global variables used in the SparkLED project
 	The objective is to shrink this file as much as possible and use
 	function arguments in stead wherever possible.
 """
@@ -32,7 +32,7 @@ for i in range(256):
 
 
 ### Test project - going OOP
-class SuperLED:
+class SparkLED:
 	def setdata(self, value):
 		self.data = value
 
