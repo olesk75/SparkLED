@@ -1,7 +1,0 @@
-SuperLED TODO
-
--   Use Spyrk libary to get core address automatically
-
--   Increase robustness. Code must work if Arduino LED slave, Spark Core or Python client disconnects and reconnects at random times.
-	Timer interrupts to disconnect wifi clients? Aborts of buffer read on Arduino?
-
