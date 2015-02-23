@@ -23,7 +23,7 @@
     animations. 
     
     For this program to do anything useful, it must be paired with a client - in this case
-    "SuperLED" - a python client that feeds this program with data.
+    "SparkLED" - a python client that feeds this program with data.
     
     The IP-adress of the Spark Core, can be found manually using curl as follows:
     curl "https://api.spark.io/v1/devices/ DEVICEID /localIP?access_token= ACCESS TOKEN"
