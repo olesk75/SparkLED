@@ -33,3 +33,4 @@ config.py
 report.txt
 images
 .idea
+__pycache__
