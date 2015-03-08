@@ -33,3 +33,5 @@ ACCESS_TOKEN = '6666666666666666666666666666666666666666'
 Both deviceid and access token can be found at [spark.io](spark.io) once you have registered the core. If you're using the emulator, just put some dummy values here, like the ones in this example.
 
 **And finally note**: The Python is all written in Python 3.4. Pthon 2.x will not work without a rewrite
+
+**Copyright (c) Ole Jakob Skjelten, 2015**
