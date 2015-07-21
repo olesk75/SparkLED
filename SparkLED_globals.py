@@ -4,17 +4,17 @@
 """
 
 # Global variables
-transmit_flag = False
-abort_flag = None
-connected = False
+transmit_flag = False	# Set when we're ready to let the transmit thread tranmit the transmit_buffer, which then unsets flag
+abort_flag = None	# Set when we want to terminate connection between server and client. Sets server in listening mode.
+connected = False	# Set when client is connected to server
 
-OFFLINE = None
-DEBUG = True
+OFFLINE = None		# For debugging: do not transmit transmit_buffer (offline debugging)
+DEBUG = True		# Dump debug output to terminal from client scripts
 NUM_LEDS = None
 
 sparkCore = None
 
-PORT = 2208     # Port number for rasberryPI
+PORT = 2208		# Port number to connect to server
 
 settings = {
 	'OFFLINE': False,
@@ -22,7 +22,7 @@ settings = {
 	'DEBUG': False
 }
 
-led_buffer = [''] * 256  # The list of bytes to be sent to curses or Arduino
+led_buffer = [''] * 256  # The list RGB colors for the LED
 for i in range(256):
 	led_buffer[i] = [0, 0, 0]  # 256 x 3 list
 
