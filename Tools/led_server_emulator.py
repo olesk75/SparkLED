@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
 # __author__ = 'olesk'
+
+#
+#   This little script simulates the Spark Core + LED array in software for testing.
+#   It uses pygame to draw a small graphical matrix which simulates the LED matrix
+#   and listens for network connections from the SparkLED client script.
+#   If you're not getting a connection, verify that you use "127.0.0.1" or "localhost"
+#   as server address in the client scripts, not the machine name or IP address, as that
+#   might not work, depending on your network setup.
+#
 import pygame, sys
 from pygame.locals import *
 import socket
