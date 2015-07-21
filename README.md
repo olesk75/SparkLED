@@ -1,6 +1,6 @@
-#SparkLED
+#SparkLED (aka ParticLED)
 
-A client/server suite for controlling a LED display. 
+A client/server suite for controlling a LED display using Python and a Particle Core (formerly "Spark Core")
 
 ## Main components
 
@@ -8,7 +8,9 @@ A client/server suite for controlling a LED display.
 
 **LED display** : array ([16x16 in my case](http://rgb-123.com/product/1616-16-x-16-rgb-led-matrix/)) of Neopixel WS2812B RGB leds
 
-**Spark Core**: The [Spark Core](http://spark.io) is a wifi and cloud enabled development platform that controls the leds and acts as server, programmed in C (Arduino)
+**Spark Core (now: "Particle Core")**: The [Spark Core](http://spark.io) is a wifi and cloud enabled development platform that controls the leds and acts as server, programmed in C (Arduino).
+
+Please note that "Spark" was renamed to "Particle", so this is now called a "Particle Core", though most code was written before the name change and references the "Spark Core". Ideally I would like to replace it with a [Photon](https://store.particle.io/?product=particle-photon) as soon as the kinks in the FastLED library are sorted out for the Photon. The Core is awesome, but just borderline fast enough (CPU and netwrok) for what we want to do here, so the Photon should be awesome(r)! ;)
 
 **"SparkLED" scripts**: python client that connects to the Spark Core over wifi and sends commands and animations/pictures for it to display on the LED display (in my case these run on a PC).
 
