@@ -1,6 +1,6 @@
 #SparkLED
 
-This is a client/server suite for controlling a LED display. 
+A client/server suite for controlling a LED display. 
 
 ## Main components
 
@@ -10,7 +10,7 @@ This is a client/server suite for controlling a LED display.
 
 **Spark Core**: The [Spark Core](http://spark.io) is a wifi and cloud enabled development platform that controls the leds and acts as server, programmed in C (Arduino)
 
-**"SparkLED" scripts**: python client that connects to the Spark Core over wifi and sends commands and animations/pictures for it to display on the LED display
+**"SparkLED" scripts**: python client that connects to the Spark Core over wifi and sends commands and animations/pictures for it to display on the LED display (in my case these run on a PC).
 
 **FastLED**: [FastLED](http://fastled.io) is an excellent library for controlling a range of LED strips and displays. For now, using the [Spark Core branch](https://github.com/FastLED/FastLED/tree/sparkcore) until it gets merged into master
 
@@ -32,6 +32,6 @@ ACCESS_TOKEN = '6666666666666666666666666666666666666666'
 
 Both deviceid and access token can be found at [spark.io](spark.io) once you have registered the core. If you're using the emulator, just put some dummy values here, like the ones in this example.
 
-**And finally note**: The Python is all written in Python 3.4. Pthon 2.x will not work without a rewrite
+**And finally note**: The python is all written in Python 3.4. Pthon 2.x will not work without a rewrite.
 
 **Copyright (c) Ole Jakob Skjelten, 2015**
