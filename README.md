@@ -1,4 +1,4 @@
-#SparkLED (aka ParticLED)
+# SparkLED (aka ParticLED)
 
 A client/server suite for controlling a LED display using Python and a Particle Core (formerly "Spark Core")
 
